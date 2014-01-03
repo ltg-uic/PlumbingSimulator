@@ -35,7 +35,7 @@ public class PlumbingSimulator extends PApplet {
 	void addpipe() {
 		endX = 0;
 		endX = 0;
-		model.addSegment(new Segment(beginX, beginY, endX, endY));
+		model.addSegment(new Segment(beginX, beginY, endX, endY, 0));
 	}
 
 }

@@ -6,7 +6,7 @@ import java.util.List;
 public class Segment {
 	public List<Pipe> pipes = new ArrayList<>();
 	
-	public Segment(int beginX, int beginY, int endX, int endY) {
+	public Segment(int beginX, int beginY, int endX, int endY, int width) {
 		// TODO Auto-generated constructor stub
 	}
 	
