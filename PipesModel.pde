@@ -16,5 +16,9 @@ public class PipesModel {
   public int getPipesN(int currentSegmentId) {
     return segments.get(currentSegmentId).getPipesN();
   }
-  
+ 
+
+  public List<Segment> getSegments(){
+    return segments;
+  }
 }

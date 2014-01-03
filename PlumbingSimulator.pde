@@ -34,7 +34,19 @@ public void setup() {
 public void draw() {
   fill(255,0,0);
   ellipse(initialX, initialY, 5, 5);
+  
+  for(Segment s: model.getSegments()) {
+    for(Pipe p: s.getPipes()) {
+       drawPipe(p.posX, p.posY, p.newposX, p.newposY,  p.pWidth);
+    }
+  }
+
 }
+
+ public void drawPipe(int x1, int y1, int x2, int y2, int pWidth){
+    strokeWeight(pWidth);
+    line(x1,y1,x2,y2);
+  }
 
 public void mousePressed() {
   addpipe();
