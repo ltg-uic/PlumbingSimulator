@@ -4,7 +4,7 @@ import java.util.Set;
 public class PipesModel {
   private Set<Pipe> pipes = new HashSet<Pipe>();
   private Set<Split> splits = new HashSet<Split>(); 
-  private int tolerance = 3;
+  private int tolerance = 5;
   
   // Initializes the model
   public void init(int initialX, int initialY) {
@@ -45,6 +45,29 @@ public class PipesModel {
       }
     }
     return null;
+  }
+  
+  // Returns the split at x and y coordinates or null if no pipe is selected
+  public Split selectSplit(int x, int y) {
+    Split temp = null;
+    for (Split s: splits) {
+      if (x>=s.x-tolerance && x<=s.x+tolerance && y>=s.y-tolerance && y<=s.y+tolerance)
+          return s;
+    } 
+    return null;
+  }
+  
+  public void deActivateAllSplits() {
+    for (Split s: splits)
+      s.isActive = false;
+  }
+  
+  public void activateSplit(Split t) {
+    for (Split s: splits) 
+      if (s.equals(t)) {
+        s.isActive = true;
+        return;
+      }
   }
   
   // Removes a pipe (p) and replaces with two pipes (x1, x) (
