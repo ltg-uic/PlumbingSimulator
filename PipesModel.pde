@@ -1,24 +1,14 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class PipesModel {
-  private List<Segment> segments = new ArrayList<Segment>();
+  private Set<Pipe> pipes = new HashSet<Pipe>();
 
-  public void addPipe(int x1, int y1, int x2, int y2, int pipeWidth, int currentSegmentId) {
-    // If there is not a segment
-    if ( currentSegmentId <= segments.size() ) {
-      Segment s = new Segment();
-      s.addPipe(x1, y1, x2, y2, pipeWidth);
-      segments.add(s);
-    }
+  public void addPipe(int x1, int y1, int x2, int y2, int pWidth) {
+    pipes.add(new Pipe(x1, y1, x2, y2, pWidth));
   }
 
-  public int getPipesN(int currentSegmentId) {
-    return segments.get(currentSegmentId).getPipesN();
-  }
- 
-
-  public List<Segment> getSegments(){
-    return segments;
+  public Set<Pipe> getPipes(){
+    return pipes;
   }
 }

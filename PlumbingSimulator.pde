@@ -1,18 +1,17 @@
 import controlP5.*;
 
 // Model
-private PipesModel model = new PipesModel();
+PipesModel model = new PipesModel();
 // CP5
-private ControlP5 cp5;
-private RadioButton r;
+ControlP5 cp5;
+RadioButton r;
 // Processing variables
-private int initialX = 10;
-private int initialY = 10;
-private int beginX = initialX;
-private int beginY = initialY;
+int initialX = 10;
+int initialY = 10;
+int beginX = initialX;
+int beginY = initialY;
 int pipeWidth;
 int pipeSplit;
-int currentSegmentId;
 
 public void setup() {
   size(640,360);
@@ -33,14 +32,9 @@ public void setup() {
 
 public void draw() {
   fill(255,0,0);
-  ellipse(initialX, initialY, 5, 5);
-  
-  for(Segment s: model.getSegments()) {
-    for(Pipe p: s.getPipes()) {
-       drawPipe(p.posX, p.posY, p.newposX, p.newposY,  p.pWidth);
-    }
-  }
-
+  ellipse(initialX, initialY, 10, 10);
+  for(Pipe p: model.getPipes())
+    drawPipe(p.x1, p.y1, p.x2, p.y2,  p.pwidth);
 }
 
  public void drawPipe(int x1, int y1, int x2, int y2, int pWidth){
@@ -49,17 +43,19 @@ public void draw() {
   }
 
 public void mousePressed() {
-  addpipe();
+ // if (pipeSplit==1) 
+    //addSplit(); 
+//   else
+    addpipe();
 }
 
 void addpipe () {
   if (mouseY>=0 && mouseY<=330 && pipeSplit!=1) {
     SnapGrid s = new SnapGrid(beginX,beginY,mouseX,mouseY);
     s.snap();
-    model.addPipe(s.x1, s.y1, s.x2, s.y2, pipeWidth, currentSegmentId);
+    model.addPipe(s.x1, s.y1, s.x2, s.y2, pipeWidth);
     beginX = s.x2;
     beginY = s.y2;
-    println("segment#: "+currentSegmentId+" #pipe:"+model.getPipesN(currentSegmentId));
     println(s.x1+","+s.y2+" : "+s.x2+","+s.y2+" : "+pipeWidth);
   }
 }

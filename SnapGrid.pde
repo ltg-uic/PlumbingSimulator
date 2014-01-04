@@ -12,11 +12,11 @@ class SnapGrid {
   }
 
   void snap() {
-    if(Math.abs(x2-x1) < Math.abs(y2-y1)){
-      x2=x1;}
-    else {
+    if(abs(x2-x1) < abs(y2-y1))
+      x2=x1;
+    else 
       y2=y1;
-    }
   }
+  
 }
 

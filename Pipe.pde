@@ -1,17 +1,18 @@
 public class Pipe {
 
-  int posX;
-  int posY;
-  int newposX;
-  int newposY;
-  int pWidth;
+  int x1;
+  int y1;
+  int x2;
+  int y2;
+  int pwidth;
 
-  Pipe(int tempposX, int tempposY, int newtempposX, int newtempposY, int temppipewidth){
-    posX = tempposX;
-    posY = tempposY;
-    newposX = newtempposX;
-    newposY = newtempposY;
-    pWidth = temppipewidth;  
+  public Pipe(int x1, int y1, int x2, int y2, int pwidth) {
+    this.x1 = x1;
+    this.y1 = y1;
+    this.x2 = x2;
+    this.y2 = y2;
+    this.pwidth = pwidth;
   }
+
 }
 
