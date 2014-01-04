@@ -26,7 +26,7 @@ public void setup() {
     .setSpacingColumn(100)
     .setNoneSelectedAllowed(false)
     .setValue(0)
-    .addItem("Select", 0)
+    .addItem("Select split", 0)
     .addItem("1 inch",1)
     .addItem("1/2 inch",2)
     .addItem("3/4 inch",3)

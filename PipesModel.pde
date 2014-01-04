@@ -8,7 +8,7 @@ public class PipesModel {
   
   // Initializes the model
   public void init(int initialX, int initialY) {
-    splits.add(new Split(initialX, initialY, 2));
+    splits.add(new Split(initialX, initialY));
   }
 
   // Adds a pipe
@@ -18,7 +18,7 @@ public class PipesModel {
   
   // Adds a split
   public void addSplit(int x, int y, int outlets) {
-    splits.add(new Split(x, y, outlets));
+    splits.add(new Split(x, y));
   }
 
   // Returns all pipes

@@ -1,13 +1,11 @@
 public class Split {
   int x;
   int y;
-  int outlets;
   boolean isActive;
   
-  public Split (int x, int y, int outlets) {
+  public Split (int x, int y) {
     this.x = x;
     this.y = y;
-    this.outlets = outlets;
     this.isActive = true ; 
   }
   
@@ -23,7 +21,7 @@ public class Split {
   
   
   public String toString() {
-    return "("+x+","+y+")("+outlets+")";
+    return "("+x+","+y+")";
   }
   
 }
