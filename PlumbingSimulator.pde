@@ -31,10 +31,8 @@ public void setup() {
 }
 
 public void draw() {
-  fill(255,0,0);
-  ellipse(initialX, initialY, 10, 10);
   for(Pipe p: model.getPipes())
-    drawPipe(p.x1, p.y1, p.x2, p.y2,  p.pwidth);
+    drawPipe(p.x1, p.y1, p.x2, p.y2, p.pWidth);
 }
 
  public void drawPipe(int x1, int y1, int x2, int y2, int pWidth){
@@ -43,9 +41,9 @@ public void draw() {
   }
 
 public void mousePressed() {
- // if (pipeSplit==1) 
-    //addSplit(); 
-//   else
+  if (pipeSplit==1) 
+    addSplit(); 
+  else
     addpipe();
 }
 
@@ -59,6 +57,18 @@ void addpipe () {
     println(s.x1+","+s.y2+" : "+s.x2+","+s.y2+" : "+pipeWidth);
   }
 }
+
+
+void addSplit() {
+  if (mouseY<0 || mouseY>330) return;
+  Pipe t = model.selectPipe(mouseX, mouseY);
+  if (t!=null) {
+    SnapGrid s = new SnapGrid(t.x1,t.y1,mouseX,mouseY);
+    s.snap();
+    model.splitPipe(t, s.x2, s.y2);
+  }
+}
+
 
 // which radio button pipe size did the user select?
 void pipeButton(int a) {
