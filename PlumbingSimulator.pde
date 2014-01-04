@@ -28,17 +28,29 @@ public void setup() {
     .addItem("1/2 inch",2)
     .addItem("3/4 inch",3)
     .addItem("Split",4);
+  model.init(initialX, initialY);
 }
 
 public void draw() {
   for(Pipe p: model.getPipes())
-    drawPipe(p.x1, p.y1, p.x2, p.y2, p.pWidth);
+    drawPipe(p);
+  for(Split s: model.getSplits())
+    drawSplit(s);
 }
 
- public void drawPipe(int x1, int y1, int x2, int y2, int pWidth){
-    strokeWeight(pWidth);
-    line(x1,y1,x2,y2);
-  }
+public void drawPipe(Pipe p) {
+  strokeWeight(p.pWidth);
+  line(p.x1,p.y1,p.x2,p.y2);
+  strokeWeight(1);
+}
+
+public void drawSplit(Split s) {
+  stroke(0,0,255);
+  fill(0,0,255);
+  ellipse(s.x,s.y,12,12);
+  fill(0);
+  stroke(0);
+}
 
 public void mousePressed() {
   if (pipeSplit==1) 
@@ -66,6 +78,7 @@ void addSplit() {
     SnapGrid s = new SnapGrid(t.x1,t.y1,mouseX,mouseY);
     s.snap();
     model.splitPipe(t, s.x2, s.y2);
+    model.addSplit(s.x2, s.y2, 1);
   }
 }
 

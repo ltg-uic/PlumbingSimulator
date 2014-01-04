@@ -1,12 +1,9 @@
 public class Pipe {
-
   int x1;
   int y1;
   int x2;
   int y2;
   int pWidth;
-  String type;
-  int outlets;
 
   public Pipe(int x1, int y1, int x2, int y2, int pWidth) {
     this.x1 = x1;
@@ -14,11 +11,6 @@ public class Pipe {
     this.x2 = x2;
     this.y2 = y2;
     this.pWidth = pWidth;
-    this.type = "pipe";
-  }
-  
-  public Pipe (int x1, int y1, int outlets) {
-    
   }
   
   
