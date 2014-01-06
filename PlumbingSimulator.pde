@@ -8,10 +8,17 @@ RadioButton r;
 // Processing variables
 int initialX = 10;
 int initialY = 10;
+float initPressure = 60;  //psi
 int beginX = initialX;
 int beginY = initialY;
+float beginPressure = initPressure;
+float endPressure;
 int pipeWidth;
+float flow;
+float rCoeff = 150; //Hazen-Williams roughness constant for PVC Schedule 40 pipes
+float inches; 
 String tool;
+
 
 public void setup() {
   size(640,360);
@@ -86,11 +93,14 @@ void addpipe () {
   }
   SnapGrid s = new SnapGrid(beginX,beginY,mouseX,mouseY);
   s.snap();
-  model.addPipe(s.x1, s.y1, s.x2, s.y2, pipeWidth);
+  endPressure = beginPressure - pressureDrop(s.x1, s.y1, s.x2, s.y2, inches, rCoeff, flow); 
+  model.addPipe(s.x1, s.y1, s.x2, s.y2, pipeWidth, beginPressure, endPressure);
   model.deActivateAllSplits();
   model.addSplit(s.x2, s.y2, 1); 
   beginX = s.x2;
   beginY = s.y2;
+  beginPressure = endPressure;
+  println(endPressure);
 }
 
 
@@ -100,11 +110,17 @@ void addSplit() {
   if (t!=null) {
     SnapGrid s = new SnapGrid(t.x1,t.y1,mouseX,mouseY);
     s.snap();
-    model.splitPipe(t, s.x2, s.y2);
+    beginPressure = t.beginP;
+    endPressure = beginPressure - pressureDrop(t.x1, t.y1, s.x2, s.y2, inches, rCoeff, flow);
+    model.splitPipe(t, s.x2, s.y2, beginPressure, endPressure);
+    
+     
     model.deActivateAllSplits();
     model.addSplit(s.x2, s.y2, 1);
     beginX = s.x2;
     beginY = s.y2;
+    beginPressure = endPressure;
+    println(endPressure);
   }
 }
 
@@ -120,6 +136,22 @@ void selectSplit() {
   } 
 }
 
+//calculate the pressure drop across the pipe
+
+float pressureDrop(int posX1, int posY1, int posX2, int posY2, float dia, float constant, float fRate) { 
+  float pLossPer100ft = 0.43 * (2083/10000.0) * pow(100/constant, 1852/1000.0) * pow(fRate, 1852/1000.0) / pow(dia, 48655/10000.0);
+  float pLossSection = pLossPer100ft * pLength(posX1, posY1, posX2, posY2) / 100;
+  return pLossSection;     
+} 
+
+int pLength (int posX1, int posY1, int posX2, int posY2) {
+  int pl = 0;
+  if(posX1 == posX2)
+    pl = abs(posY2-posY1);
+  else if(posY1 == posY2)
+    pl = abs(posX2-posX1);
+  return pl;
+}
 
 // which radio button pipe size did the user select?
 void pipeButton(int a) {
@@ -129,14 +161,20 @@ void pipeButton(int a) {
       break;
     case 1:  // pipe diameter 1 inch 
       pipeWidth = 10;
+      inches = 1;
+      flow = 10; //gallons per minute
       tool = "pipe";
       break;
     case 2:  // pipe diameter 3/4 inch
       pipeWidth = 5;
+      inches = 0.75;
+      flow = 8;  //gallons per minute
       tool = "pipe";
       break;
-    case 3:  // pipe diameter 3/4 inch
+    case 3:  // pipe diameter 1/2 inch
       pipeWidth = 1;
+      inches = 0.5;
+      flow = 2; //gallons per minute
       tool = "pipe";
       break;
     case 4:  // user wants to split from the last pipe

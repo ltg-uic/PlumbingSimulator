@@ -3,6 +3,7 @@ public class Split {
   int y;
   boolean isActive;
   
+  
   public Split (int x, int y) {
     this.x = x;
     this.y = y;
