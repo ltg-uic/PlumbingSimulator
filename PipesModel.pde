@@ -77,4 +77,8 @@ public class PipesModel {
     pipes.remove(p);
   }
   
+  public void deletePipe(Pipe q) {
+    pipes.remove(q);
+    println("removed");
+  }
 }

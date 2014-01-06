@@ -44,7 +44,8 @@ public void setup() {
     .addItem("1 inch",1)
     .addItem("1/2 inch",2)
     .addItem("3/4 inch",3)
-    .addItem("Split",4);
+    .addItem("Split",4)
+    .addItem("Remove",5);
   model.init(initialX, initialY);
 }
 
@@ -89,6 +90,9 @@ public void mousePressed() {
   }
   if (tool.equals("pipe")) {
     addpipe();
+  }
+  if (tool.equals("remove")) {
+    removePipe();
   }
 }
 
@@ -165,8 +169,16 @@ void selectSplit() {
   } 
 }
 
-//calculate the pressure drop across the pipe
+void removePipe(){
+  if (mouseY<0 || mouseY>330) return;
+  Pipe r = model.selectPipe(mouseX, mouseY);
+  if (r!=null) {
+    println(r.toString());
+    model.deletePipe(r);
+  }  
+}
 
+//calculate the pressure drop across the pipe
 float pressureDrop(float pipeLength, float dia, float constant, float fRate) { 
   float pLossPer100ft = 0.43 * (2083/10000.0) * pow(100/constant, 1852/1000.0) * pow(fRate, 1852/1000.0) / pow(dia, 48655/10000.0);
   float pLossSection = pLossPer100ft * pipeLength / 100;
@@ -224,8 +236,11 @@ void pipeButton(int a) {
       bendLen = 2; //equivalent length of pipe bends
       tool = "pipe";
       break;
-    case 4:  // user wants to split from the last pipe
+    case 4:  // user wants to split pipe
       tool = "split";
+      break;
+    case 5:  // user wants to remove pipe
+      tool = "remove";
       break;
   }
   
