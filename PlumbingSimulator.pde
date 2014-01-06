@@ -23,6 +23,7 @@ float totalLen;
 boolean hPipe;
 boolean vPipe;
 boolean elbow;
+boolean pdNoWrite;
 String tool;
 
 
@@ -99,7 +100,7 @@ void addpipe () {
   }
   SnapGrid s = new SnapGrid(beginX,beginY,mouseX,mouseY);
   s.snap();
-
+  
   //calculate pressure drop across this pipe
   elbow = false;                                //reset flag for checking pipes at 90 degrees 
   totalLen = pLength(s.x1, s.y1, s.x2, s.y2);   
@@ -115,11 +116,13 @@ void addpipe () {
   beginY = s.y2;
   
   //write the pressure values on the sketch
-  text(beginPressure, s.x1+10, s.y1+10);
+  if(!pdNoWrite) text(beginPressure, s.x1+10, s.y1+10);  //to fix the bug where the beginning pressure was getting re-written on the previous text at that x,y when selectSplit was opted
   text(endPressure, s.x2+10, s.y2+10);
   
   beginPressure = endPressure;
   println(endPressure);
+  
+  pdNoWrite = false;
 }
 
 
@@ -198,6 +201,7 @@ void pipeButton(int a) {
   switch(a) {
     case 0:
       tool =  "select";
+      pdNoWrite = true;  //set flag to indicate that the beginning pressure does not need to be rewritten at this split
       break;
     case 1:  // pipe diameter 1 inch 
       pipeWidth = 10;
