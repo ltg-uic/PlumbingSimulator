@@ -99,16 +99,25 @@ void addpipe () {
   }
   SnapGrid s = new SnapGrid(beginX,beginY,mouseX,mouseY);
   s.snap();
-  elbow = false;
-  totalLen = pLength(s.x1, s.y1, s.x2, s.y2);
-  endPressure = beginPressure - pressureDrop(totalLen, inches, rCoeff, flow); 
+
+  //calculate pressure drop across this pipe
+  elbow = false;                                //reset flag for checking pipes at 90 degrees 
+  totalLen = pLength(s.x1, s.y1, s.x2, s.y2);   
+  endPressure = beginPressure - pressureDrop(totalLen, inches, rCoeff, flow);   //pressure at end of pipe 
+  
   model.addPipe(s.x1, s.y1, s.x2, s.y2, pipeWidth, beginPressure, endPressure);
-  if(s.x1 == s.x2) vPipe = true;
-  if(s.y1 == s.y2) hPipe = true;
+  if(s.x1 == s.x2) vPipe = true;     //set flag to indicate vertical pipe
+  if(s.y1 == s.y2) hPipe = true;     //set flag to indicate horizontal pipe
+  
   model.deActivateAllSplits();
-  model.addSplit(s.x2, s.y2, 1); 
+  model.addSplit(s.x2, s.y2, 1);
   beginX = s.x2;
   beginY = s.y2;
+  
+  //write the pressure values on the sketch
+  text(beginPressure, s.x1+10, s.y1+10);
+  text(endPressure, s.x2+10, s.y2+10);
+  
   beginPressure = endPressure;
   println(endPressure);
 }
@@ -120,17 +129,22 @@ void addSplit() {
   if (t!=null) {
     SnapGrid s = new SnapGrid(t.x1,t.y1,mouseX,mouseY);
     s.snap();
-    elbow = false;
+    
+    //calculate pressure drop across this pipe
+    elbow = false;                                //reset flag for checking pipes at 90 degrees 
     totalLen = pLength(t.x1, t.y1, s.x2, s.y2);
     beginPressure = t.beginP;
     endPressure = beginPressure - pressureDrop(totalLen, inches, rCoeff, flow);
-    model.splitPipe(t, s.x2, s.y2, beginPressure, endPressure);
     
-     
+    model.splitPipe(t, s.x2, s.y2, beginPressure, endPressure);
     model.deActivateAllSplits();
     model.addSplit(s.x2, s.y2, 1);
     beginX = s.x2;
     beginY = s.y2;
+    
+    //write the pressure values on the sketch
+    text(beginPressure, s.x1+10, s.y1+10);
+    text(endPressure, s.x2+10, s.y2+10);
     beginPressure = endPressure;
     println(endPressure);
   }
