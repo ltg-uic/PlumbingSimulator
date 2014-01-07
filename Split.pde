@@ -2,12 +2,14 @@ public class Split {
   int x;
   int y;
   boolean isActive;
+  float pressure;
   
   
-  public Split (int x, int y) {
+  public Split (int x, int y, float pressure) {
     this.x = x;
     this.y = y;
     this.isActive = true ; 
+    this.pressure = pressure;
   }
   
   
