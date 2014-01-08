@@ -205,6 +205,10 @@ void removePipe(){
       elbow = false;                                //reset flag for checking pipes at 90 degrees 
       totalLen = pLength(p.x1, p.y1, p.x2, p.y2);    
       Split a = model.selectSplit(p.x1, p.y1);      
+      if (a == null) {
+        model.deleteSplit(b);
+        return;
+      }
       endPressure = a.pressure - pressureDrop(totalLen, inches, rCoeff, flow);   //pressure at end of pipe 
       Split q = model.selectSplit(p.x2, p.y2);   
       if(endPressure > 0) 
