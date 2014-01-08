@@ -169,7 +169,23 @@ void removePipe(){
   if (r!=null) {
     println(r.toString());
     model.deActivateAllSplits();
+    
+    Split b = model.selectSplit(r.x2, r.y2); //set the value of pressure at the end of the removed pipe to zero because there is no pipe 
+    b.pressure = 0;
     model.deletePipe(r);
+    
+    //re-calculate pressures at all nodes because of the removed pipe. Effectively all pressures after the removed section should be set to zero because network is incomplete now
+    for(Pipe p: model.getPipes()) {
+      elbow = false;                                //reset flag for checking pipes at 90 degrees 
+      totalLen = pLength(p.x1, p.y1, p.x2, p.y2);    
+      Split a = model.selectSplit(p.x1, p.y1);      
+      endPressure = a.pressure - pressureDrop(totalLen, inches, rCoeff, flow);   //pressure at end of pipe 
+      Split q = model.selectSplit(p.x2, p.y2);   
+      if(endPressure > 0) 
+        q.pressure = endPressure;
+      else q.pressure = 0;        //all pressures after the removed section will be negative so set them to zero
+    }
+   model.deleteSplit(b); 
   }  
 }
 

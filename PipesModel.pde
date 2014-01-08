@@ -1,9 +1,9 @@
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class PipesModel {
-  private Set<Pipe> pipes = new HashSet<Pipe>();
-  private Set<Split> splits = new HashSet<Split>(); 
+  private Set<Pipe> pipes = new LinkedHashSet<Pipe>();
+  private Set<Split> splits = new LinkedHashSet<Split>(); 
   private int tolerance = 5;
   
   // Initializes the model
