@@ -23,7 +23,9 @@ float totalLen;
 boolean hPipe;
 boolean vPipe;
 boolean elbow;
+boolean pipeOverlap;
 int pConstant = 15;
+int tolerance = 5;
 String tool;
 
 
@@ -108,17 +110,41 @@ void addpipe () {
   SnapGrid s = new SnapGrid(beginX,beginY,mouseX,mouseY);
   s.snap();
   
+  //check if endpoint of new pipe is the begining of an existing pipe. Have to iterate through Pipes and NOT Splits because old split had been removed with the previous pipe
+  for(Pipe p: model.getPipes()) {
+    if (s.x2>=p.x1-tolerance && s.x2<=p.x1+tolerance && s.y2>=p.y1-tolerance && s.y2<=p.y1+tolerance) { //snap end of new pipe to beginning of existing pipe 
+      println("overlap");
+      pipeOverlap = true;
+      s.x2 = p.x1;
+      s.y2 = p.y1;
+    }
+  }
+  model.addPipe(s.x1, s.y1, s.x2, s.y2, pipeWidth);
+  model.deActivateAllSplits();
+  if(s.x1 == s.x2) vPipe = true;     //set flag to indicate vertical pipe
+  if(s.y1 == s.y2) hPipe = true;     //set flag to indicate horizontal pipe
+  
+  //calculate pressure at the end of the new pipe segment that has replaced the previous pipe
   elbow = false;                                //reset flag for checking if pipes are at 90 degrees 
   totalLen = pLength(s.x1, s.y1, s.x2, s.y2);  
   Split a = model.selectSplit(s.x1, s.y1);     //get the split at the beginning of this new pipe to calculate the pressure drop across the new pipe 
   endPressure = a.pressure - pressureDrop(totalLen, inches, rCoeff, flow);   //pressure at end of pipe 
-  
-  model.addPipe(s.x1, s.y1, s.x2, s.y2, pipeWidth);
-  if(s.x1 == s.x2) vPipe = true;     //set flag to indicate vertical pipe
-  if(s.y1 == s.y2) hPipe = true;     //set flag to indicate horizontal pipe
-  
-  model.deActivateAllSplits();
   model.addSplit(s.x2, s.y2, 1, endPressure);
+  
+  //recalculate pressure for all pipes as the network is complete now
+  if(pipeOverlap) {
+    println("recalculating pressures");
+    for(Pipe p: model.getPipes()) {
+    elbow = false;                                //reset flag for checking pipes at 90 degrees 
+    totalLen = pLength(p.x1, p.y1, p.x2, p.y2);    
+    Split f = model.selectSplit(p.x1, p.y1);      
+    endPressure = f.pressure - pressureDrop(totalLen, inches, rCoeff, flow);   //pressure at end of pipe 
+    Split q = model.selectSplit(p.x2, p.y2);    
+    q.pressure = endPressure;
+    }
+  }  
+
+//  model.addSplit(s.x2, s.y2, 1, endPressure);
   beginX = s.x2;
   beginY = s.y2;
 }
