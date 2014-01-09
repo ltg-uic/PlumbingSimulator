@@ -29,6 +29,8 @@ int pConstant = 15;
 int tolerance = 5;
 String tool;
 int controlPos = 680; //set the y value of where the controls would be displayed
+int displaceX;
+int displaceY;
 
 public void setup() {
   size(1280,720);
@@ -48,7 +50,8 @@ public void setup() {
     .addItem("3/4 inch",2)
     .addItem("1/2 inch",3)
     .addItem("Split",4)
-    .addItem("Remove",5);
+    .addItem("Remove",5)
+    .addItem("Displace",6);
   model.init(initialX, initialY, initPressure);
 }
 
@@ -121,6 +124,10 @@ public void mousePressed() {
   }
   if (tool.equals("remove")) {
     removePipe();
+  }
+  if (tool.equals("displace")) {
+    for(Pipe p: model.getPipes())
+      displacePipe();
   }
 }
 
@@ -272,6 +279,31 @@ void removePipe(){
   }  
 }
 
+void displacePipe() {
+//  if (mouseY<0 || mouseY>controlPos) return; 
+  Split t = model.knowActiveSplit(); //finding the active split that is the target destination for open pipe end
+  println("Active split: "+t.x+","+t.y);
+  Pipe p = model.getOpenPipe(); //finding the pipe with open end; will be recongnized when there is a pipe which does not have a split at x1,y1 as it was removed when the old pipe was removed
+  if (p == null) return;
+  println("Open pipe: "+p.toString());
+  displaceX = p.x1 - t.x;
+  displaceY = p.y1 - t.y;
+  Split g = model.selectSplit(p.x2, p.y2);  //select the split for removal at the end of the pipe being displaced (equivalent to removing the pipe and adding a new one at the active node) 
+  model.deleteSplit(g);
+  p.x1 = p.x1 - displaceX;
+  p.y1 = p.y1 - displaceY;
+  p.x2 = p.x2 - displaceX;
+  p.y2 = p.y2 - displaceY;
+  //Calculate pressure at the end of this displaced pipe
+  elbow = false;                                //reset flag for checking if pipes are at 90 degrees 
+  totalLen = pLength(p.x1, p.y1, p.x2, p.y2);   
+  endPressure = t.pressure - pressureDrop(totalLen, p.inches, rCoeff, p.flow);   //pressure calculations for new pipe so inches and flow have been correctly set by use input
+  model.addSplit(p.x2, p.y2, 1, endPressure);
+  model.deActivateAllSplits();
+  Split n = model.selectSplit(p.x2, p.y2);
+  model.activateSplit(n);
+}
+
 //calculate the pressure drop across the pipe
 float pressureDrop(float pipeLength, float dia, float constant, float fRate) { 
   constant = constant/1.0;
@@ -337,6 +369,9 @@ void pipeButton(int a) {
       break;
     case 5:  // user wants to remove pipe
       tool = "remove";
+      break;
+    case 6:  // user wants to displace pipe
+      tool = "displace";
       break;
   }
   

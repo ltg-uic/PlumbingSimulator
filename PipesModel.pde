@@ -70,6 +70,19 @@ public class PipesModel {
       }
   }
   
+  public Split knowActiveSplit() {
+    for (Split s: splits)
+      if (s.isActive) return s;
+    return null;
+  }
+  
+  //return the pipe which has an open end i.e. no split at the starting 
+  public Pipe getOpenPipe() {
+    for (Pipe p: pipes)
+      if (selectSplit(p.x1, p.y1) == null) return p;
+    return null;
+  }    
+      
   // Removes a pipe (p) and replaces with two pipes (x1, x) (
   public void splitPipe(Pipe p, int x, int y) {
     pipes.add(new Pipe(p.x1, p.y1, x, y, p.pWidth, p.inches, p.flow));
