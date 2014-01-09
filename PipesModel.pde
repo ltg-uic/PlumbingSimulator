@@ -12,8 +12,8 @@ public class PipesModel {
   }
 
   // Adds a pipe
-  public void addPipe(int x1, int y1, int x2, int y2, int pWidth) {
-    pipes.add(new Pipe(x1, y1, x2, y2, pWidth));
+  public void addPipe(int x1, int y1, int x2, int y2, int pWidth, float inches, float flow) {
+    pipes.add(new Pipe(x1, y1, x2, y2, pWidth, inches, flow));
   }
   
   // Adds a split
@@ -72,8 +72,8 @@ public class PipesModel {
   
   // Removes a pipe (p) and replaces with two pipes (x1, x) (
   public void splitPipe(Pipe p, int x, int y) {
-    pipes.add(new Pipe(p.x1, p.y1, x, y, p.pWidth));
-    pipes.add(new Pipe(x, y, p.x2, p.y2, p.pWidth));
+    pipes.add(new Pipe(p.x1, p.y1, x, y, p.pWidth, p.inches, p.flow));
+    pipes.add(new Pipe(x, y, p.x2, p.y2, p.pWidth, p.inches, p.flow));
     pipes.remove(p);
   }
   
