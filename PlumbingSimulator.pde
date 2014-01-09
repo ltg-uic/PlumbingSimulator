@@ -56,7 +56,7 @@ public void setup() {
 }
 
 public void draw() {
-  background(200);
+  background(255);
   fill(150);
   noStroke();
   rect(0, controlPos-10, width, 40);
