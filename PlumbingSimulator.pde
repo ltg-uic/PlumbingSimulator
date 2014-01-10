@@ -7,11 +7,8 @@ ControlP5 cp5;
 RadioButton r;
 // Processing variables
 int initialX = 10;
-int initialY = 600;
+int initialY = 10;
 float initPressure = 60;  //psi
-float budget = 2000; //dollars
-float pipeCost;
-float cost;
 int beginX = initialX;
 int beginY = initialY;
 float beginPressure = initPressure;
@@ -68,7 +65,6 @@ public void draw() {
   for(Split s: model.getSplits())
     drawSplit(s);
   drawFixtures();
-  text("Budget: $"+budget, width/2, 10);
 }
 
 public void drawPipe(Pipe p) {
@@ -88,7 +84,7 @@ public void drawSplit(Split s) {
   }
   ellipse(s.x,s.y,12,12);
   //write the pressure values at the split
-  text(int(s.pressure)+" psi", s.x+pConstant, s.y+pConstant);
+  text(s.pressure, s.x+pConstant, s.y+pConstant);
   fill(0);
   stroke(0);
 }
@@ -97,10 +93,10 @@ public void drawFixtures() {
   stroke(0,0,255);
   //1st fixture
   noFill();
-  ellipse(width-800,100,25,25);
+  ellipse(width-50,40,25,25);
   fill(0,0,255);
-  text("A",width-805,104);
-  text("10 psi",width-805,80);
+  text("A",width-55,44);
+  text("10 psi",width-55,20);
   //2nd fixture
   noFill();
   ellipse(width-50,100,25,25);
@@ -109,10 +105,10 @@ public void drawFixtures() {
   text("15 psi",width-55,80);
   //3rd fixture
   noFill();
-  ellipse(width-50,600,25,25);
+  ellipse(width-300,500,25,25);
   fill(0,0,255);
-  text("C",width-55,604);
-  text("8 psi",width-55,580);
+  text("C",width-305,504);
+  text("8 psi",width-305,480);
 }
 
 public void mousePressed() {
@@ -157,7 +153,7 @@ void addpipe () {
   
   //checkOverlap();
       
-  model.addPipe(s.x1, s.y1, s.x2, s.y2, pipeWidth, inches, flow, cost);
+  model.addPipe(s.x1, s.y1, s.x2, s.y2, pipeWidth, inches, flow);
   model.deActivateAllSplits();
   if(s.x1 == s.x2) vPipe = true;     //set flag to indicate vertical pipe
   if(s.y1 == s.y2) hPipe = true;     //set flag to indicate horizontal pipe
@@ -165,8 +161,6 @@ void addpipe () {
   //calculate pressure at the end of the new pipe segment that has replaced the previous pipe
   elbow = false;                                //reset flag for checking if pipes are at 90 degrees 
   totalLen = pLength(s.x1, s.y1, s.x2, s.y2);  
-  pipeCost = totalLen * cost;
-  budget = budget - pipeCost;
   Split a = model.selectSplit(s.x1, s.y1);     //get the split at the beginning of this new pipe to calculate the pressure drop across the new pipe 
   endPressure = a.pressure - pressureDrop(totalLen, inches, rCoeff, flow);   //pressure calculations for new pipe so inches and flow have been correctly set by use input
   model.addSplit(s.x2, s.y2, 1, endPressure);
@@ -265,9 +259,6 @@ void removePipe(){
       beginX = t.x;
       beginY = t.y;
     }
-    totalLen = pLength(r.x1, r.y1, r.x2, r.y2);  
-    pipeCost = totalLen * r.cost;
-    budget = budget + pipeCost;
     model.deletePipe(r);
     
     //re-calculate pressures at all nodes because of the removed pipe. Effectively all pressures after the removed section should be set to zero because network is incomplete now
@@ -357,7 +348,6 @@ void pipeButton(int a) {
       pipeWidth = 10;
       inches = 1;
       flow = 10; //gallons per minute
-      cost = 0.9;
       bendLen = 3; //equivalent length of pipe bends
       tool = "pipe";
       break;
@@ -365,7 +355,6 @@ void pipeButton(int a) {
       pipeWidth = 5;
       inches = 0.75;
       flow = 8;  //gallons per minute
-      cost = 0.67;
       bendLen = 2.5; //equivalent length of pipe bends
       tool = "pipe";
       break;
@@ -373,7 +362,6 @@ void pipeButton(int a) {
       pipeWidth = 1;
       inches = 0.5;
       flow = 2; //gallons per minute
-      cost = 0.57;
       bendLen = 2; //equivalent length of pipe bends
       tool = "pipe";
       break;
