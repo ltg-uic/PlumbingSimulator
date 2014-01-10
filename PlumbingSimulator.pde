@@ -249,15 +249,16 @@ void removePipe(){
   Pipe r = model.selectPipe(mouseX, mouseY);
   if (r!=null) {
     println(r.toString());
-    model.deActivateAllSplits();
     Split b = model.selectSplit(r.x2, r.y2); //set the value of pressure at the end of the removed pipe to zero because there is no pipe 
     b.pressure = 0;
     
     Split t = model.selectSplit(r.x1, r.y1); //activate the previous split so that new pipes can be added here by default
-    model.activateSplit(t);
-    beginX = t.x;
-    beginY = t.y;
-    
+    if (t != null) {
+      model.deActivateAllSplits();
+      model.activateSplit(t);
+      beginX = t.x;
+      beginY = t.y;
+    }
     model.deletePipe(r);
     
     //re-calculate pressures at all nodes because of the removed pipe. Effectively all pressures after the removed section should be set to zero because network is incomplete now
