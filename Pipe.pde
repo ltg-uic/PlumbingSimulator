@@ -6,8 +6,9 @@ public class Pipe {
   int pWidth;
   float inches;
   float flow;
+  float cost;
 
-  public Pipe(int x1, int y1, int x2, int y2, int pWidth, float inches, float flow) {
+  public Pipe(int x1, int y1, int x2, int y2, int pWidth, float inches, float flow, float cost) {
     this.x1 = x1;
     this.y1 = y1;
     this.x2 = x2;
@@ -15,6 +16,7 @@ public class Pipe {
     this.pWidth = pWidth;
     this.inches = inches;
     this.flow = flow;
+    this.cost = cost;
   }
   
   
