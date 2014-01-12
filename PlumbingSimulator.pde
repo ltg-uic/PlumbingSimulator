@@ -6,8 +6,8 @@ PipesModel model = new PipesModel();
 ControlP5 cp5;
 RadioButton r;
 // Processing variables
-int initialX = 10;
-int initialY = 600;
+int initialX = 100;
+int initialY = 650;
 float initPressure = 60;  //psi
 float budget = 2000; //dollars
 float pipeCost;
@@ -39,7 +39,7 @@ public void setup() {
   size(1280,720);
   cp5 = new ControlP5(this);
   r = cp5.addRadioButton("pipeButton")
-    .setPosition(20,controlPos)
+    .setPosition(200,controlPos)
     .setSize(20,20)
     .setColorForeground(color(120))
     .setColorActive(color(255))
@@ -60,6 +60,7 @@ public void setup() {
 
 public void draw() {
   background(255);
+  drawGrid();
   fill(150);
   noStroke();
   rect(0, controlPos-10, width, 40);
@@ -68,7 +69,10 @@ public void draw() {
   for(Split s: model.getSplits())
     drawSplit(s);
   drawFixtures();
-  text("Budget: $"+budget, width/2, 10);
+  fill(0);
+  text("Total budget: $2000",500,10);
+  fill(255,0,0);
+  text("Money spent: $"+int(2000-budget), 500, 30);
 }
 
 public void drawPipe(Pipe p) {
@@ -97,22 +101,45 @@ public void drawFixtures() {
   stroke(0,0,255);
   //1st fixture
   noFill();
-  ellipse(width-800,100,25,25);
+  ellipse(500,250,25,25);
   fill(0,0,255);
-  text("A",width-805,104);
-  text("10 psi",width-805,80);
+  text("A",495,254);
+  text("10 psi",495,230);
   //2nd fixture
   noFill();
-  ellipse(width-50,100,25,25);
+  ellipse(1000,250,25,25);
   fill(0,0,255);
-  text("B",width-55,104);
-  text("15 psi",width-55,80);
+  text("B",995,254);
+  text("15 psi",995,230);
   //3rd fixture
   noFill();
-  ellipse(width-50,600,25,25);
+  ellipse(1000,650,25,25);
   fill(0,0,255);
-  text("C",width-55,604);
-  text("8 psi",width-55,580);
+  text("C",995,654);
+  text("8 psi",995,630);
+}
+
+void drawGrid() {
+  stroke(240);
+  line(100,50,1000,50);
+  line(100,150,1000,150);
+  line(100,250,1000,250);         //grid line from 0 to fixture A and B
+//  line(515,250,width-63,250);  //grid line from fixture A to B
+  line(100,350,1000,350);             //lines between A,B and C
+  line(100,450,1000,450);
+  line(100,550,1000,550);
+  line(100,650,1000,650);          //grid line from 0 to fixture C
+  
+  //verical grids
+  line(200,0,200,controlPos-10);
+  line(300,0,300,controlPos-10);
+  line(400,0,400,controlPos-10);
+  line(500,0,500,controlPos-10);
+  line(600,0,600,controlPos-10);
+  line(700,0,700,controlPos-10);
+  line(800,0,800,controlPos-10);
+  line(900,0,900,controlPos-10);
+  line(1000,0,1000,controlPos-10);
 }
 
 public void mousePressed() {
@@ -137,26 +164,22 @@ public void mousePressed() {
 
 void addpipe () {
   if (mouseY<0 || mouseY>controlPos) return;
-  if (model.selectPipe(mouseX, mouseY)!=null) {
-    println("I'm not drawing on top of another pipe!");
-    return;
-  }
   SnapGrid s = new SnapGrid(beginX,beginY,mouseX,mouseY);
   s.snap();
-  
   //check if endpoint of new pipe is the begining of an existing pipe. Have to iterate through Pipes and NOT Splits because old split had been removed with the previous pipe
   for(Pipe p: model.getPipes()) {
-//    pipeEndOverlap = checkEndOverlap();
     if (s.x2>=p.x1-tolerance && s.x2<=p.x1+tolerance && s.y2>=p.y1-tolerance && s.y2<=p.y1+tolerance) { //snap end of new pipe to beginning of existing pipe 
       println("overlap");
       s.x2 = p.x1;
       s.y2 = p.y1;
       pipeEndOverlap = true;
+    }
   }
+  //check if user is trying to redraw over an existing pipe
+  if (model.selectPipe(mouseX, mouseY)!=null) {
+    println("I'm not drawing on top of another pipe!");
+    return;
   }
-  
-  //checkOverlap();
-      
   model.addPipe(s.x1, s.y1, s.x2, s.y2, pipeWidth, inches, flow, cost);
   model.deActivateAllSplits();
   if(s.x1 == s.x2) vPipe = true;     //set flag to indicate vertical pipe
@@ -362,7 +385,7 @@ void pipeButton(int a) {
       tool = "pipe";
       break;
     case 2:  // pipe diameter 3/4 inch
-      pipeWidth = 5;
+      pipeWidth = 6;
       inches = 0.75;
       flow = 8;  //gallons per minute
       cost = 0.67;
@@ -370,7 +393,7 @@ void pipeButton(int a) {
       tool = "pipe";
       break;
     case 3:  // pipe diameter 1/2 inch
-      pipeWidth = 1;
+      pipeWidth = 3;
       inches = 0.5;
       flow = 2; //gallons per minute
       cost = 0.57;

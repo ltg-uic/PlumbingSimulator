@@ -37,10 +37,14 @@ public class PipesModel {
     for (Pipe p: pipes) {
       // Horizontal pipe
       if (p.y1==p.y2) {
-        if (x>=p.x1 && x<=p.x2 && y>=p.y1-tolerance && y<=p.y1+tolerance)
+        if (x>=p.x1 && x<=p.x2 && y>=p.y1-tolerance && y<=p.y1+tolerance) //check if mousepress falls on pipe running from left to right
           return p;
+        if (x<=p.x1 && x>=p.x2 && y>=p.y1-tolerance && y<=p.y1+tolerance) //check if mousepress falls on pipe running from right to left
+          return p; 
       } else {
-        if (x>=p.x1-tolerance && x<=p.x1+tolerance && y>=p.y1 && y<=p.y2)
+        if (x>=p.x1-tolerance && x<=p.x1+tolerance && y>=p.y1 && y<=p.y2) //check if mousepress falls on pipe running from top to bottom
+          return p;
+        if (x>=p.x1-tolerance && x<=p.x1+tolerance && y<=p.y1 && y>=p.y2) //check if mousepress falls on pipe running from bottom to top
           return p;
       }
     }
