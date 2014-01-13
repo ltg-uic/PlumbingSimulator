@@ -6,7 +6,7 @@ PipesModel model = new PipesModel();
 ControlP5 cp5;
 RadioButton r;
 // Processing variables
-int initialX = 100;
+int initialX = 50;
 int initialY = 650;
 float initPressure = 60;  //psi
 float budget = 2000; //dollars
@@ -34,12 +34,17 @@ String tool;
 int controlPos = 680; //set the y value of where the controls would be displayed
 int displaceX;
 int displaceY;
+int helpX = 1010;
+int helpY = 20;
+int vGridX = 150;
+int vGridY = 0;
+int hGridX = initialX;
 
 public void setup() {
   size(1280,720);
   cp5 = new ControlP5(this);
   r = cp5.addRadioButton("pipeButton")
-    .setPosition(200,controlPos)
+    .setPosition(150,controlPos)
     .setSize(20,20)
     .setColorForeground(color(120))
     .setColorActive(color(255))
@@ -48,11 +53,11 @@ public void setup() {
     .setSpacingColumn(100)
     .setNoneSelectedAllowed(false)
     .setValue(0)
-    .addItem("Select split", 0)
+    .addItem("Select branch point", 0)
     .addItem("1 inch",1)
     .addItem("3/4 inch",2)
     .addItem("1/2 inch",3)
-    .addItem("Split",4)
+    .addItem("Split Pipe",4)
     .addItem("Remove",5)
     .addItem("Displace",6);
   model.init(initialX, initialY, initPressure);
@@ -61,6 +66,7 @@ public void setup() {
 public void draw() {
   background(255);
   drawGrid();
+  drawHelpText();
   fill(150);
   noStroke();
   rect(0, controlPos-10, width, 40);
@@ -70,9 +76,9 @@ public void draw() {
     drawSplit(s);
   drawFixtures();
   fill(0);
-  text("Total budget: $2000",500,10);
+  text("Total budget: $2000",450,10);
   fill(255,0,0);
-  text("Money spent: $"+int(2000-budget), 500, 30);
+  text("Money spent: $"+int(2000-budget),450,30);
 }
 
 public void drawPipe(Pipe p) {
@@ -101,45 +107,72 @@ public void drawFixtures() {
   stroke(0,0,255);
   //1st fixture
   noFill();
-  ellipse(500,250,25,25);
+  ellipse(450,250,25,25);
   fill(0,0,255);
-  text("A",495,254);
-  text("10 psi",495,230);
+  text("A",445,254);
+  text("10 psi",445,230);
   //2nd fixture
   noFill();
-  ellipse(1000,250,25,25);
+  ellipse(950,250,25,25);
   fill(0,0,255);
-  text("B",995,254);
-  text("15 psi",995,230);
+  text("B",945,254);
+  text("15 psi",945,230);
   //3rd fixture
   noFill();
-  ellipse(1000,650,25,25);
+  ellipse(950,650,25,25);
   fill(0,0,255);
-  text("C",995,654);
-  text("8 psi",995,630);
+  text("C",945,654);
+  text("8 psi",945,630);
 }
 
 void drawGrid() {
   stroke(240);
-  line(100,50,1000,50);
-  line(100,150,1000,150);
-  line(100,250,1000,250);         //grid line from 0 to fixture A and B
-//  line(515,250,width-63,250);  //grid line from fixture A to B
-  line(100,350,1000,350);             //lines between A,B and C
-  line(100,450,1000,450);
-  line(100,550,1000,550);
-  line(100,650,1000,650);          //grid line from 0 to fixture C
+  line(hGridX,50,vGridX+800,50);
+  line(hGridX,150,vGridX+800,150);
+  line(hGridX,250,vGridX+800,250);         //grid line from 0 to fixture A and B
+  line(hGridX,350,vGridX+800,350);             //lines between A,B and C
+  line(hGridX,450,vGridX+800,450);
+  line(hGridX,550,vGridX+800,550);
+  line(hGridX,650,vGridX+800,650);          //grid line from 0 to fixture C
   
   //verical grids
-  line(200,0,200,controlPos-10);
-  line(300,0,300,controlPos-10);
-  line(400,0,400,controlPos-10);
-  line(500,0,500,controlPos-10);
-  line(600,0,600,controlPos-10);
-  line(700,0,700,controlPos-10);
-  line(800,0,800,controlPos-10);
-  line(900,0,900,controlPos-10);
-  line(1000,0,1000,controlPos-10);
+  line(vGridX,0,vGridX,controlPos-10);
+  line(vGridX+100,0,vGridX+100,controlPos-10);
+  line(vGridX+200,0,vGridX+200,controlPos-10);
+  line(vGridX+300,0,vGridX+300,controlPos-10);
+  line(vGridX+400,0,vGridX+400,controlPos-10);
+  line(vGridX+500,0,vGridX+500,controlPos-10);
+  line(vGridX+600,0,vGridX+600,controlPos-10);
+  line(vGridX+700,0,vGridX+700,controlPos-10);
+  line(vGridX+800,0,vGridX+800,controlPos-10);
+}
+
+void drawHelpText() {
+  fill(0);
+  text("DID YOU KNOW?",helpX+60,helpY);
+  text("Drop in pressure across a pipe is directly",helpX,helpY+30);
+  text("related to water's flow rate through the",helpX,helpY+45);
+  text("pipe and inversely related to the diameter",helpX,helpY+60);
+  text("of the pipe.",helpX,helpY+75);
+  text("Flow rate = Gallons of water flowing through",helpX,helpY+105);
+  text("the pipe in 1 minute.",helpX,helpY+120);
+  text("Water's flow rate reduces as the diameter of",helpX,helpY+150);
+  text("the pipe becomes smaller due to friction",helpX,helpY+165);
+  text("inside the pipe.",helpX,helpY+180);
+  stroke(0);
+  strokeWeight(10);
+  line(helpX+80,helpY+310,helpX+180,helpY+310);
+  text("Pipe diameter: 1 inch, Flow rate: 10 gal/min",helpX+5,helpY+280);
+  text("Cost of 1 ft: $90",helpX+80,helpY+300);
+  strokeWeight(6);
+  line(helpX+80,helpY+410,helpX+180,helpY+410);
+  text("Pipe diameter: 3/4 inch, Flow rate: 8 gal/min",helpX+5,helpY+380);
+  text("Cost of 1 ft: $67",helpX+80,helpY+400);
+  strokeWeight(3);
+  line(helpX+80,helpY+510,helpX+180,helpY+510);
+  text("Pipe diameter: 1/2 inch, Flow rate: 2 gal/min",helpX+5,helpY+480);
+  text("Cost of 1 ft: $57",helpX+80,helpY+500);
+  strokeWeight(1);
 }
 
 public void mousePressed() {
