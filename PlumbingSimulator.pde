@@ -41,6 +41,7 @@ int vGridX = 150;
 int vGridY = 0;
 int hGridX = initialX;
 int bendCost = 100;
+int outputP;
 
 public void setup() {
   size(1280,720);
@@ -100,7 +101,11 @@ public void drawSplit(Split s) {
   }
   ellipse(s.x,s.y,12,12);
   //write the pressure values at the split
-  text(int(s.pressure)+" psi", s.x+pConstant, s.y+pConstant);
+  if (s.pressure < 0) 
+    outputP = 0;
+  else
+    outputP = int(s.pressure);  
+  text(outputP+" psi", s.x+pConstant, s.y+pConstant);
   fill(0);
   stroke(0);
 }
