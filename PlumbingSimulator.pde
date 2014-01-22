@@ -39,6 +39,7 @@ int helpY = 20;
 int vGridX = 150;
 int vGridY = 0;
 int hGridX = initialX;
+int bendCost = 100;
 
 public void setup() {
   size(1280,720);
@@ -127,6 +128,7 @@ public void drawFixtures() {
 
 void drawGrid() {
   stroke(240);
+  strokeWeight(13);
   line(hGridX,50,vGridX+800,50);
   line(hGridX,150,vGridX+800,150);
   line(hGridX,250,vGridX+800,250);         //grid line from 0 to fixture A and B
@@ -213,16 +215,35 @@ void addpipe () {
     println("I'm not drawing on top of another pipe!");
     return;
   }
-  model.addPipe(s.x1, s.y1, s.x2, s.y2, pipeWidth, inches, flow, cost);
-  model.deActivateAllSplits();
-  if(s.x1 == s.x2) vPipe = true;     //set flag to indicate vertical pipe
-  if(s.y1 == s.y2) hPipe = true;     //set flag to indicate horizontal pipe
+//  model.addPipe(s.x1, s.y1, s.x2, s.y2, pipeWidth, inches, flow, cost);
+//  model.deActivateAllSplits();
+//  if(s.x1 == s.x2) {
+//    vPipe = true;     //set flag to indicate vertical pipe
+//    hPipe = false;
+//  }
+//  if(s.y1 == s.y2) {
+//    hPipe = true;     //set flag to indicate horizontal pipe
+//    vPipe = false;
+//  }
   
   //calculate pressure at the end of the new pipe segment that has replaced the previous pipe
   elbow = false;                                //reset flag for checking if pipes are at 90 degrees 
   totalLen = pLength(s.x1, s.y1, s.x2, s.y2);  
   pipeCost = totalLen * cost;
+//  if(bendPipe(s.x1, s.y1, s.x2, s.y2))   //add cost of bend if this is a bend
+//      pipeCost = pipeCost + bendCost;
+  Pipe v = model.selectPipe(s.x1, s.y1);  //lookup for the pipe connected to the starting end of the new pipe BEFORE adding the new pipe because once new pipe is added then x1,y1 will be found in 2 pipes
+    if (v!=null) {
+      if (s.x1 == s.x2 && v.y1 == v.y2)     //if the previous pipe was at 90 degrees
+        pipeCost = pipeCost + bendCost;
+      if (s.y1 == s.y2 && v.x1 == v.x2) 
+        pipeCost = pipeCost + bendCost;
+    }
   budget = budget - pipeCost;
+  
+  model.addPipe(s.x1, s.y1, s.x2, s.y2, pipeWidth, inches, flow, cost);
+  model.deActivateAllSplits();
+
   Split a = model.selectSplit(s.x1, s.y1);     //get the split at the beginning of this new pipe to calculate the pressure drop across the new pipe 
   endPressure = a.pressure - pressureDrop(totalLen, inches, rCoeff, flow);   //pressure calculations for new pipe so inches and flow have been correctly set by use input
   model.addSplit(s.x2, s.y2, 1, endPressure);
@@ -310,6 +331,11 @@ void removePipe(){
   if (mouseY<0 || mouseY>controlPos) return;
   Pipe r = model.selectPipe(mouseX, mouseY);
   if (r!=null) {
+    int tempX1 = r.x1;
+    int tempY1 = r.y1;
+    int tempX2 = r.x2;
+    int tempY2 = r.y2;
+    
     println(r.toString());
     Split b = model.selectSplit(r.x2, r.y2); //set the value of pressure at the end of the removed pipe to zero because there is no pipe 
     b.pressure = 0;
@@ -323,8 +349,19 @@ void removePipe(){
     }
     totalLen = pLength(r.x1, r.y1, r.x2, r.y2);  
     pipeCost = totalLen * r.cost;
-    budget = budget + pipeCost;
+//    if(bendPipe(r.x1, r.y1, r.x2, r.y2))   //remove cost of bend if this was a bend
+//      pipeCost = pipeCost + bendCost;
+//    budget = budget + pipeCost;
     model.deletePipe(r);
+    
+    Pipe v = model.selectPipe(tempX1, tempY1);  //lookup for the pipe connected to the starting end of the selected pipe after deleting the selected pipe 
+    if (v!=null) {
+      if (tempX1 == tempX2 && v.y1 == v.y2)     //if the previous pipe was at 90 degrees
+        pipeCost = pipeCost + bendCost;
+      if (tempY1 == tempY2 && v.x1 == v.x2) 
+        pipeCost = pipeCost + bendCost;
+    }
+    budget = budget + pipeCost;
     
     //re-calculate pressures at all nodes because of the removed pipe. Effectively all pressures after the removed section should be set to zero because network is incomplete now
     for(Pipe p: model.getPipes()) {
@@ -385,9 +422,9 @@ float pLength(int posX1, int posY1, int posX2, int posY2) {
     pipeLen = abs(posY2-posY1);
   else if(posY1 == posY2)
     pipeLen = abs(posX2-posX1);
-  if(bendPipe(posX1, posY1, posX2, posY2)) 
-    return pipeLen+bendLen;
-  else
+//  if(bendPipe(posX1, posY1, posX2, posY2)) 
+//    return pipeLen+bendLen;
+//  else
     return pipeLen;
 }
 
