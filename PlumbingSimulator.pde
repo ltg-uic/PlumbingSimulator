@@ -1,4 +1,5 @@
 import controlP5.*;
+import static javax.swing.JOptionPane.*;
 
 // Model
 PipesModel model = new PipesModel();
@@ -212,6 +213,7 @@ void addpipe () {
   }
   //check if user is trying to redraw over an existing pipe
   if (model.selectPipe(mouseX, mouseY)!=null) {
+    showMessageDialog(null, "Select 'REMOVE' mode if you want to remove pipes and then click on the pipe you want to remove", "Alert", PLAIN_MESSAGE);
     println("I'm not drawing on top of another pipe!");
     return;
   }
@@ -449,7 +451,7 @@ void pipeButton(int a) {
     case 1:  // pipe diameter 1 inch 
       pipeWidth = 10;
       inches = 1;
-      flow = 10; //gallons per minute
+      flow = 5; //gallons per minute
       cost = 0.9;
       bendLen = 3; //equivalent length of pipe bends
       tool = "pipe";
@@ -457,7 +459,7 @@ void pipeButton(int a) {
     case 2:  // pipe diameter 3/4 inch
       pipeWidth = 6;
       inches = 0.75;
-      flow = 8;  //gallons per minute
+      flow = 5;  //gallons per minute
       cost = 0.67;
       bendLen = 2.5; //equivalent length of pipe bends
       tool = "pipe";
@@ -465,7 +467,7 @@ void pipeButton(int a) {
     case 3:  // pipe diameter 1/2 inch
       pipeWidth = 3;
       inches = 0.5;
-      flow = 2; //gallons per minute
+      flow = 5; //gallons per minute
       cost = 0.57;
       bendLen = 2; //equivalent length of pipe bends
       tool = "pipe";
