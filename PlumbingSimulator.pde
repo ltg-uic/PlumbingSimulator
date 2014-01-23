@@ -7,8 +7,8 @@ PipesModel model = new PipesModel();
 ControlP5 cp5;
 RadioButton r;
 // Processing variables
-int initialX = 50;
-int initialY = 650;
+int initialX = 100;
+int initialY = 600;
 float initPressure = 60;  //psi
 float budget = 2000; //dollars
 float pipeCost;
@@ -78,6 +78,7 @@ public void draw() {
   for(Split s: model.getSplits())
     drawSplit(s);
   drawFixtures();
+//  blockAccess();
   fill(0);
   text("Total budget: $2000",450,10);
   fill(255,0,0);
@@ -117,44 +118,68 @@ public void drawFixtures() {
   ellipse(450,250,25,25);
   fill(0,0,255);
   text("A",445,254);
-  text("10 psi",445,230);
+  text("10 psi",460,240);
   //2nd fixture
   noFill();
   ellipse(950,250,25,25);
   fill(0,0,255);
   text("B",945,254);
-  text("15 psi",945,230);
+  text("15 psi",960,240);
   //3rd fixture
   noFill();
-  ellipse(950,650,25,25);
+  ellipse(950,600,25,25);
   fill(0,0,255);
-  text("C",945,654);
-  text("8 psi",945,630);
+  text("C",945,604);
+  text("8 psi",960,590);
 }
 
 void drawGrid() {
   stroke(240);
   strokeWeight(13);
+  //horizontal grid lines
   line(hGridX,50,vGridX+800,50);
   line(hGridX,150,vGridX+800,150);
-  line(hGridX,250,vGridX+800,250);         //grid line from 0 to fixture A and B
-  line(hGridX,350,vGridX+800,350);             //lines between A,B and C
+  line(hGridX,250,vGridX+800,250);         //grid line through fixtures A,B,C
+  line(hGridX,350,vGridX+800,350);             
   line(hGridX,450,vGridX+800,450);
-  line(hGridX,550,vGridX+800,550);
-  line(hGridX,650,vGridX+800,650);          //grid line from 0 to fixture C
+  line(hGridX,500,vGridX+800,500);
+  line(hGridX,600,vGridX+800,600);          //grid line from 0 to fixture C
   
-  //verical grids
-  line(vGridX,0,vGridX,controlPos-10);
-  line(vGridX+100,0,vGridX+100,controlPos-10);
-  line(vGridX+200,0,vGridX+200,controlPos-10);
-  line(vGridX+300,0,vGridX+300,controlPos-10);
-  line(vGridX+400,0,vGridX+400,controlPos-10);
-  line(vGridX+500,0,vGridX+500,controlPos-10);
-  line(vGridX+600,0,vGridX+600,controlPos-10);
-  line(vGridX+700,0,vGridX+700,controlPos-10);
-  line(vGridX+800,0,vGridX+800,controlPos-10);
+  //horizontal segments
+  line(vGridX,300,vGridX+100,300);
+  line(vGridX+150,100,vGridX+300,100);
+  line(vGridX+200,550,vGridX+300,550);
+  
+  //verical grid lines
+  line(vGridX,50,vGridX,600);
+  line(vGridX+100,50,vGridX+100,600);
+  line(vGridX+150,50,vGridX+150,600);
+  line(vGridX+300,50,vGridX+300,600);
+  line(vGridX+450,50,vGridX+450,600);
+  line(vGridX+500,50,vGridX+500,600);
+  line(vGridX+600,50,vGridX+600,600);
+  line(vGridX+650,50,vGridX+650,600);
+  line(vGridX+800,50,vGridX+800,600);
+  
+  //vertical segments
+  line(vGridX+200,500,vGridX+200,600);    
+  line(vGridX+250,350,vGridX+250,450);    
+  line(vGridX+400,350,vGridX+400,450);    
+  line(vGridX+550,150,vGridX+550,250);    
+  line(vGridX+700,350,vGridX+700,450);    
 }
 
+void blockAccess() {
+  stroke(255,0,0);
+  fill(255,0,0);
+  rect(vGridX-8,142,15,15);    //row2 col1
+  rect(vGridX+292,42,15,15);   //row1 col3
+  rect(vGridX+192,242,15,15);  //row3 col3
+  rect(vGridX+292,342,15,15);  //row4 col4
+  rect(vGridX+392,42,15,15);   //row1 col5
+  rect(vGridX+92,442,15,15);   
+}
+  
 void drawHelpText() {
   fill(0);
   text("DID YOU KNOW?",helpX+60,helpY);
@@ -184,6 +209,9 @@ void drawHelpText() {
 }
 
 public void mousePressed() {
+//  if (mouseX >= initialX-tolerance && mouseX <= initialX+tolerance && mouseY >= initialY-tolerance && mouseY <= initialY+tolerance) {
+//    getPressure();
+//  }
   if (tool==null) return;
   if (tool.equals("select")) {
     selectSplit();  
@@ -202,6 +230,19 @@ public void mousePressed() {
       displacePipe();
   }
 }
+
+//void getPressure() {
+//  String userPressure = showInputDialog("Please enter Input Pressure:");
+//  if (userPressure == null)
+//    return;
+//  else if ("".equals(userPressure))
+//    return;
+//  initPressure = float(userPressure); 
+//  
+//  Split s = model.selectSplit(initialX, initialY);
+//  model.deleteSplit(s);
+//  model.init(initialX, initialY, initPressure);
+//}
 
 void addpipe () {
   if (mouseY<0 || mouseY>controlPos) return;
@@ -261,7 +302,7 @@ void addpipe () {
     for(Pipe p: model.getPipes()) {
     elbow = false;                                //reset flag for checking pipes at 90 degrees 
     totalLen = pLength(p.x1, p.y1, p.x2, p.y2);    
-    Split f = model.selectSplit(p.x1, p.y1);      
+    Split f = model.selectSplit(p.x1, p.y1);    
     endPressure = f.pressure - pressureDrop(totalLen, p.inches, rCoeff, p.flow);   //pressure at end of pipe; inches and flow values associated with every pipe should be used 
     Split q = model.selectSplit(p.x2, p.y2);    
     q.pressure = endPressure;
