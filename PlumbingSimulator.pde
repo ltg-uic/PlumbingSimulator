@@ -26,9 +26,7 @@ float bendLen;
 float totalLen;
 boolean hPipe;
 boolean vPipe;
-boolean elbow;
 boolean pipeEndOverlap;
-boolean pipeOverlap;
 int pConstant = 15;
 int tolerance = 5;
 String tool;
@@ -277,23 +275,11 @@ void addpipe () {
     println("I'm not drawing on top of another pipe!");
     return;
   }
-//  model.addPipe(s.x1, s.y1, s.x2, s.y2, pipeWidth, inches, flow, cost);
-//  model.deActivateAllSplits();
-//  if(s.x1 == s.x2) {
-//    vPipe = true;     //set flag to indicate vertical pipe
-//    hPipe = false;
-//  }
-//  if(s.y1 == s.y2) {
-//    hPipe = true;     //set flag to indicate horizontal pipe
-//    vPipe = false;
-//  }
   
   //calculate pressure at the end of the new pipe segment that has replaced the previous pipe
   elbow = false;                                //reset flag for checking if pipes are at 90 degrees 
   totalLen = pLength(s.x1, s.y1, s.x2, s.y2);  
   pipeCost = totalLen * cost;
-//  if(bendPipe(s.x1, s.y1, s.x2, s.y2))   //add cost of bend if this is a bend
-//      pipeCost = pipeCost + bendCost;
   Pipe v = model.selectPipe(s.x1, s.y1);  //lookup for the pipe connected to the starting end of the new pipe BEFORE adding the new pipe because once new pipe is added then x1,y1 will be found in 2 pipes
     if (v!=null) {
       if (s.x1 == s.x2 && v.y1 == v.y2)     //if the previous pipe was at 90 degrees
@@ -317,8 +303,6 @@ void addpipe () {
       recalculatePressure(p);
     }
   }  
-
-//  model.addSplit(s.x2, s.y2, 1, endPressure);
   beginX = s.x2;
   beginY = s.y2;
 }
@@ -350,28 +334,7 @@ void addSplit() {
   }
 }
 
-//boolean checkEndOverlap() {
-//  if (s.x2>=p.x1-tolerance && s.x2<=p.x1+tolerance && s.y2>=p.y1-tolerance && s.y2<=p.y1+tolerance) { //snap end of new pipe to beginning of existing pipe 
-//      println("overlap");
-//      s.x2 = p.x1;
-//      s.y2 = p.y1;
-//      return true;
-//  }
-
-//void checkOverlap() {
-//  if (s.x1 == s.x2)
-//    for(int y = s.y1; y<= s.y2; y++) {
-//      Pipes w = model.selectPipe(s.x1,y);
-//      if(w != null) println("bridge needed at "+s.x1+","+y);
-//    }
-//  else if (s.y1 == s.y2) {
-//    for(int x = s.x1; x<= s.x2; x++) {
-//      Pipes g = model.selectPipe(x,s.y1);
-//      if(g != null) println("bridge needed at "+x+","+s.y1);
-//    }
-//  }
-//}
-      
+ 
 void selectSplit() {
   if (mouseY<0 || mouseY>controlPos) return;
   Split t = model.selectSplit(mouseX, mouseY);
@@ -405,9 +368,6 @@ void removePipe(){
     }
     totalLen = pLength(r.x1, r.y1, r.x2, r.y2);  
     pipeCost = totalLen * r.cost;
-//    if(bendPipe(r.x1, r.y1, r.x2, r.y2))   //remove cost of bend if this was a bend
-//      pipeCost = pipeCost + bendCost;
-//    budget = budget + pipeCost;
     model.deletePipe(r);
     
     Pipe v = model.selectPipe(tempX1, tempY1);  //lookup for the pipe connected to the starting end of the selected pipe after deleting the selected pipe 
@@ -438,8 +398,7 @@ void removePipe(){
   }  
 }
 
-void displacePipe() {
-//  if (mouseY<0 || mouseY>controlPos) return; 
+void displacePipe() { 
   Split t = model.knowActiveSplit(); //finding the active split that is the target destination for open pipe end
   println("Active split: "+t.x+","+t.y);
   Pipe p = model.getOpenPipe(); //finding the pipe with open end; will be recongnized when there is a pipe which does not have a split at x1,y1 as it was removed when the old pipe was removed
@@ -478,10 +437,7 @@ float pLength(int posX1, int posY1, int posX2, int posY2) {
     pipeLen = abs(posY2-posY1);
   else if(posY1 == posY2)
     pipeLen = abs(posX2-posX1);
-//  if(bendPipe(posX1, posY1, posX2, posY2)) 
-//    return pipeLen+bendLen;
-//  else
-    return pipeLen;
+  return pipeLen;
 }
 
 //recalculate pressure for the wntire system due to the modifications made 
@@ -493,17 +449,6 @@ void recalculatePressure(Pipe p) {
     q.pressure = endPressure;
 }
 
-boolean bendPipe(int posX1, int posY1, int posX2, int posY2) {
-  if((posX1 == posX2) && hPipe) {
-    hPipe = false;
-    elbow = true;
-  }
-  else if((posY1 == posY2) && vPipe) {
-    vPipe = false;
-    elbow = true;
-  }
-  return elbow;
-}
 
 // which radio button pipe size did the user select?
 void pipeButton(int a) {
