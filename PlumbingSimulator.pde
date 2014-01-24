@@ -52,7 +52,7 @@ public void setup() {
     .setColorForeground(color(120))
     .setColorActive(color(255))
     .setColorLabel(color(0))
-    .setItemsPerRow(7)
+    .setItemsPerRow(8)
     .setSpacingColumn(100)
     .setNoneSelectedAllowed(false)
     .setValue(0)
@@ -62,7 +62,8 @@ public void setup() {
     .addItem("1/2 inch",3)
     .addItem("Split Pipe",4)
     .addItem("Remove",5)
-    .addItem("Displace",6);
+    .addItem("Displace",6)
+    .addItem("Change starting pressure",7);
   model.init(initialX, initialY, initPressure);
 }
 
@@ -209,9 +210,6 @@ void drawHelpText() {
 }
 
 public void mousePressed() {
-//  if (mouseX >= initialX-tolerance && mouseX <= initialX+tolerance && mouseY >= initialY-tolerance && mouseY <= initialY+tolerance) {
-//    getPressure();
-//  }
   if (tool==null) return;
   if (tool.equals("select")) {
     selectSplit();  
@@ -229,20 +227,30 @@ public void mousePressed() {
     for(Pipe p: model.getPipes())
       displacePipe();
   }
+  if (tool.equals("userPressure")) {
+    getPressure();
+  }
 }
 
-//void getPressure() {
-//  String userPressure = showInputDialog("Please enter Input Pressure:");
-//  if (userPressure == null)
-//    return;
-//  else if ("".equals(userPressure))
-//    return;
-//  initPressure = float(userPressure); 
-//  
-//  Split s = model.selectSplit(initialX, initialY);
-//  model.deleteSplit(s);
-//  model.init(initialX, initialY, initPressure);
-//}
+void getPressure() {
+  Split a = model.knowActiveSplit();  //get the active split before removing & adding the very first split because this first split will be set as active by this method 
+  String userPressure = showInputDialog("Please enter Input Pressure:");
+  if (userPressure == null)
+    return;
+  else if ("".equals(userPressure))
+    return;
+  initPressure = float(userPressure); 
+  
+  Split s = model.selectSplit(initialX, initialY);
+  model.deleteSplit(s);
+  model.init(initialX, initialY, initPressure);
+  model.deActivateAllSplits();
+  model.activateSplit(a);
+  
+  for(Pipe p: model.getPipes()) {
+    recalculatePressure(p);
+    }
+}
 
 void addpipe () {
   if (mouseY<0 || mouseY>controlPos) return;
@@ -300,12 +308,7 @@ void addpipe () {
   if(pipeEndOverlap) {
     println("recalculating pressures");
     for(Pipe p: model.getPipes()) {
-    elbow = false;                                //reset flag for checking pipes at 90 degrees 
-    totalLen = pLength(p.x1, p.y1, p.x2, p.y2);    
-    Split f = model.selectSplit(p.x1, p.y1);    
-    endPressure = f.pressure - pressureDrop(totalLen, p.inches, rCoeff, p.flow);   //pressure at end of pipe; inches and flow values associated with every pipe should be used 
-    Split q = model.selectSplit(p.x2, p.y2);    
-    q.pressure = endPressure;
+      recalculatePressure(p);
     }
   }  
 
@@ -313,7 +316,6 @@ void addpipe () {
   beginX = s.x2;
   beginY = s.y2;
 }
-
 
 void addSplit() {
   if (mouseY<0 || mouseY>controlPos) return;
@@ -476,6 +478,15 @@ float pLength(int posX1, int posY1, int posX2, int posY2) {
     return pipeLen;
 }
 
+//recalculate pressure for the wntire system due to the modifications made 
+void recalculatePressure(Pipe p) {           
+    totalLen = pLength(p.x1, p.y1, p.x2, p.y2);    
+    Split f = model.selectSplit(p.x1, p.y1);    
+    endPressure = f.pressure - pressureDrop(totalLen, p.inches, rCoeff, p.flow);   //pressure at end of pipe; inches and flow values associated with every pipe should be used 
+    Split q = model.selectSplit(p.x2, p.y2);    
+    q.pressure = endPressure;
+}
+
 boolean bendPipe(int posX1, int posY1, int posX2, int posY2) {
   if((posX1 == posX2) && hPipe) {
     hPipe = false;
@@ -497,7 +508,7 @@ void pipeButton(int a) {
     case 1:  // pipe diameter 1 inch 
       pipeWidth = 10;
       inches = 1;
-      flow = 5; //gallons per minute
+      flow = 10; //gallons per minute
       cost = 0.9;
       bendLen = 3; //equivalent length of pipe bends
       tool = "pipe";
@@ -505,7 +516,7 @@ void pipeButton(int a) {
     case 2:  // pipe diameter 3/4 inch
       pipeWidth = 6;
       inches = 0.75;
-      flow = 5;  //gallons per minute
+      flow = 8;  //gallons per minute
       cost = 0.67;
       bendLen = 2.5; //equivalent length of pipe bends
       tool = "pipe";
@@ -526,6 +537,9 @@ void pipeButton(int a) {
       break;
     case 6:  // user wants to displace pipe
       tool = "displace";
+      break;
+    case 7:  // user wants to change starting pressure
+      tool = "userPressure";
       break;
   }
   
