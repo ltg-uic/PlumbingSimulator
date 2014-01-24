@@ -1,5 +1,5 @@
 import controlP5.*;
-import static javax.swing.JOptionPane.*;
+//import javax.swing.JOptionPane.*;
 
 // Model
 PipesModel model = new PipesModel();
@@ -238,7 +238,7 @@ public void mousePressed() {
 
 void getPressure() {
   Split a = model.knowActiveSplit();  //get the active split before removing & adding the very first split because this first split will be set as active by this method 
-  String userPressure = showInputDialog("Please enter Input Pressure:");
+  String userPressure = javax.swing.JOptionPane.showInputDialog("Please enter Input Pressure:");
   if (userPressure == null)
     return;
   else if ("".equals(userPressure))
@@ -271,13 +271,12 @@ void addpipe () {
   }
   //check if user is trying to redraw over an existing pipe
   if (model.selectPipe(mouseX, mouseY)!=null) {
-    showMessageDialog(null, "Select 'REMOVE' mode if you want to remove pipes and then click on the pipe you want to remove", "Alert", PLAIN_MESSAGE);
+    javax.swing.JOptionPane.showMessageDialog(null, "Select 'REMOVE' mode if you want to remove pipes and then click on the pipe you want to remove", "Alert", javax.swing.JOptionPane.PLAIN_MESSAGE);
     println("I'm not drawing on top of another pipe!");
     return;
   }
   
-  //calculate pressure at the end of the new pipe segment that has replaced the previous pipe
-  elbow = false;                                //reset flag for checking if pipes are at 90 degrees 
+  //calculate pressure at the end of the new pipe segment that has replaced the previous pipe 
   totalLen = pLength(s.x1, s.y1, s.x2, s.y2);  
   pipeCost = totalLen * cost;
   Pipe v = model.selectPipe(s.x1, s.y1);  //lookup for the pipe connected to the starting end of the new pipe BEFORE adding the new pipe because once new pipe is added then x1,y1 will be found in 2 pipes
@@ -313,8 +312,7 @@ void addSplit() {
   if (t!=null) {
     SnapGrid s = new SnapGrid(t.x1,t.y1,mouseX,mouseY);
     s.snap();
-    
-    elbow = false;                                //reset flag for checking pipes at 90 degrees 
+     
     totalLen = pLength(t.x1, t.y1, s.x2, s.y2);    // length of 1st pipe created by the split
     Split a = model.selectSplit(t.x1, t.y1);     //get the split at the beginning of 1st pipe to calculate the pressure drop across the new pipe 
     endPressure = a.pressure - pressureDrop(totalLen, t.inches, rCoeff, t.flow);   //pressure at end of pipe 
@@ -380,8 +378,7 @@ void removePipe(){
     budget = budget + pipeCost;
     
     //re-calculate pressures at all nodes because of the removed pipe. Effectively all pressures after the removed section should be set to zero because network is incomplete now
-    for(Pipe p: model.getPipes()) {
-      elbow = false;                                //reset flag for checking pipes at 90 degrees 
+    for(Pipe p: model.getPipes()) { 
       totalLen = pLength(p.x1, p.y1, p.x2, p.y2);    
       Split a = model.selectSplit(p.x1, p.y1);      
       if (a == null) {
@@ -412,8 +409,7 @@ void displacePipe() {
   p.y1 = p.y1 - displaceY;
   p.x2 = p.x2 - displaceX;
   p.y2 = p.y2 - displaceY;
-  //Calculate pressure at the end of this displaced pipe
-  elbow = false;                                //reset flag for checking if pipes are at 90 degrees 
+  //Calculate pressure at the end of this displaced pipe 
   totalLen = pLength(p.x1, p.y1, p.x2, p.y2);   
   endPressure = t.pressure - pressureDrop(totalLen, p.inches, rCoeff, p.flow);   //pressure calculations for new pipe so inches and flow have been correctly set by use input
   model.addSplit(p.x2, p.y2, 1, endPressure);
