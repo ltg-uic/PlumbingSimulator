@@ -79,7 +79,7 @@ public void draw() {
   for(Split s: model.getSplits())
     drawSplit(s);
   drawFixtures();
-//  blockAccess();
+  blockAccess();
   fill(0);
   text("Total budget: $2000",450,10);
   fill(255,0,0);
@@ -163,6 +163,8 @@ void drawGrid() {
   line(vGridX+800,50,vGridX+800,600);
   
   //vertical segments
+  line(vGridX+200,150,vGridX+200,250);
+  line(vGridX+250,150,vGridX+250,250);
   line(vGridX+200,500,vGridX+200,600);    
   line(vGridX+250,350,vGridX+250,450);    
   line(vGridX+400,350,vGridX+400,450);    
@@ -173,12 +175,16 @@ void drawGrid() {
 void blockAccess() {
   stroke(255,0,0);
   fill(255,0,0);
-  rect(vGridX-8,142,15,15);    //row2 col1
-  rect(vGridX+292,42,15,15);   //row1 col3
-  rect(vGridX+192,242,15,15);  //row3 col3
-  rect(vGridX+292,342,15,15);  //row4 col4
-  rect(vGridX+392,42,15,15);   //row1 col5
-  rect(vGridX+92,442,15,15);   
+  rect(vGridX-10,200,20,5);    
+  rect(vGridX+50,240,5,20);
+  rect(vGridX+220,240,5,20);  
+  rect(vGridX+140,300,20,5); 
+  rect(vGridX+290,200,20,5);
+  rect(vGridX+290,400,20,5);   
+  rect(vGridX+550,590,5,20);
+  rect(vGridX+550,340,5,20);
+  rect(vGridX+750,240,5,20);
+  rect(vGridX+750,440,5,20);
 }
   
 void drawHelpText() {
