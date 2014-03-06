@@ -9,9 +9,9 @@ RadioButton r;
 // Processing variables
 int initialX = 100;
 int initialY = 600;
-float initPressure = 60;  //psi
-float budget = 2000; //dollars
-float pipeCost;
+float initPressure = 60;  //psi (has to be float and not int because user can input the pressure as a string and typecasting from string to float is not allowed)
+int budget = 2000; //dollars
+int pipeCost;
 float cost;
 int beginX = initialX;
 int beginY = initialY;
@@ -276,11 +276,6 @@ void addpipe () {
 //  println(mouseX+","+mouseY);
   SnapGrid s = new SnapGrid(beginX,beginY,mouseX,mouseY);
 
-  rect(buttonPosX,buttonPosY-40,30,40);  //button for adding pipe vertically up 
-  rect(buttonPosX,buttonPosY+30,30,40);  //button for adding pipe vertically down
-  rect(buttonPosX+30,buttonPosY,40,30);  //button for adding pipe horizontally right
-  rect(buttonPosX-40,buttonPosY,40,30);  //button for adding pipe horizontally left
-  
   //perform increments of 50 pixels (put 1 feet long pipes) 
   if (mouseX>= buttonPosX && mouseX<=buttonPosX+30 && mouseY>=buttonPosY-40 && mouseY<=buttonPosY) {
     s.x2 = s.x1;
@@ -319,13 +314,13 @@ void addpipe () {
   
   //calculate pressure at the end of the new pipe segment that has replaced the previous pipe 
   totalLen = pLength(s.x1, s.y1, s.x2, s.y2);  
-  pipeCost = totalLen * cost;
+  pipeCost = int(totalLen * cost);
   Pipe v = model.selectPipe(s.x1, s.y1);  //lookup for the pipe connected to the starting end of the new pipe BEFORE adding the new pipe because once new pipe is added then x1,y1 will be found in 2 pipes
     if (v!=null) {
       if (s.x1 == s.x2 && v.y1 == v.y2)     //if the previous pipe was at 90 degrees
-        pipeCost = pipeCost + bendCost;
+        pipeCost = int(pipeCost + bendCost);
       if (s.y1 == s.y2 && v.x1 == v.x2) 
-        pipeCost = pipeCost + bendCost;
+        pipeCost = int(pipeCost + bendCost);
     }
   budget = budget - pipeCost;
 //  println(s.y1+"-"+s.y2);
@@ -406,15 +401,15 @@ void removePipe(){
       beginY = t.y;
     }
     totalLen = pLength(r.x1, r.y1, r.x2, r.y2);  
-    pipeCost = totalLen * r.cost;
+    pipeCost = int(totalLen * r.cost);
     model.deletePipe(r);
     
     Pipe v = model.selectPipe(tempX1, tempY1);  //lookup for the pipe connected to the starting end of the selected pipe after deleting the selected pipe 
     if (v!=null) {
       if (tempX1 == tempX2 && v.y1 == v.y2)     //if the previous pipe was at 90 degrees
-        pipeCost = pipeCost + bendCost;
+        pipeCost = int(pipeCost + bendCost);
       if (tempY1 == tempY2 && v.x1 == v.x2) 
-        pipeCost = pipeCost + bendCost;
+        pipeCost = int(pipeCost + bendCost);
     }
     budget = budget + pipeCost;
     
@@ -499,7 +494,7 @@ void pipeButton(int a) {
       inches = 1;
       flow = 10; //gallons per minute
       cost = 0.9;
-      bendLen = 3; //equivalent length of pipe bends
+      bendLen = 3.0; //equivalent length of pipe bends
       tool = "pipe";
       break;
     case 2:  // pipe diameter 3/4 inch
@@ -515,7 +510,7 @@ void pipeButton(int a) {
       inches = 0.5;
       flow = 5; //gallons per minute
       cost = 0.57;
-      bendLen = 2; //equivalent length of pipe bends
+      bendLen = 2.0; //equivalent length of pipe bends
       tool = "pipe";
       break;
     case 4:  // user wants to split pipe
