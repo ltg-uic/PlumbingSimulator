@@ -15,8 +15,8 @@ float pipeCost;
 float cost;
 int beginX = initialX;
 int beginY = initialY;
-float beginPressure = initPressure;
-float endPressure;
+int beginPressure = (int)initPressure;
+int endPressure;
 int pipeWidth;
 float flow;
 float rCoeff = 150; //Hazen-Williams roughness constant for PVC Schedule 40 pipes
@@ -40,6 +40,8 @@ int vGridY = 0;
 int hGridX = initialX;
 int bendCost = 100;
 int outputP;
+int buttonPosX = 1100;  //for setting position of the buttons for putting the 1 feet pipes
+int buttonPosY = 590;
 
 public void setup() {
   size(1280,720);
@@ -62,7 +64,7 @@ public void setup() {
     .addItem("Remove",5)
     .addItem("Displace",6)
     .addItem("Change starting pressure",7);
-  model.init(initialX, initialY, initPressure);
+  model.init(initialX, initialY, (int)initPressure);
 }
 
 public void draw() {
@@ -72,6 +74,10 @@ public void draw() {
   fill(150);
   noStroke();
   rect(0, controlPos-10, width, 40);
+  rect(buttonPosX,buttonPosY-40,30,40);  //button for adding pipe vertically up 
+  rect(buttonPosX,buttonPosY+30,30,40);  //button for adding pipe vertically down
+  rect(buttonPosX+30,buttonPosY,40,30);  //button for adding pipe horizontally right
+  rect(buttonPosX-40,buttonPosY,40,30);  //button for adding pipe horizontally left
   for(Pipe p: model.getPipes())
     drawPipe(p);
   for(Split s: model.getSplits())
@@ -168,6 +174,15 @@ void drawGrid() {
   line(vGridX+400,350,vGridX+400,450);    
   line(vGridX+550,150,vGridX+550,250);    
   line(vGridX+700,350,vGridX+700,450);    
+  
+  //ALL
+  stroke(255);
+  strokeWeight(1);
+  int i = vGridX;
+  while (i<vGridX+800) {
+    line(i,50,i,600);
+    i = i+50;
+  }
 }
 
 void blockAccess() {
@@ -247,7 +262,7 @@ void getPressure() {
   
   Split s = model.selectSplit(initialX, initialY);
   model.deleteSplit(s);
-  model.init(initialX, initialY, initPressure);
+  model.init(initialX, initialY, (int)initPressure);
   model.deActivateAllSplits();
   model.activateSplit(a);
   
@@ -258,8 +273,34 @@ void getPressure() {
 
 void addpipe () {
   if (mouseY<0 || mouseY>controlPos) return;
+//  println(mouseX+","+mouseY);
   SnapGrid s = new SnapGrid(beginX,beginY,mouseX,mouseY);
-  s.snap();
+
+  rect(buttonPosX,buttonPosY-40,30,40);  //button for adding pipe vertically up 
+  rect(buttonPosX,buttonPosY+30,30,40);  //button for adding pipe vertically down
+  rect(buttonPosX+30,buttonPosY,40,30);  //button for adding pipe horizontally right
+  rect(buttonPosX-40,buttonPosY,40,30);  //button for adding pipe horizontally left
+  
+  //perform increments of 50 pixels (put 1 feet long pipes) 
+  if (mouseX>= buttonPosX && mouseX<=buttonPosX+30 && mouseY>=buttonPosY-40 && mouseY<=buttonPosY) {
+    s.x2 = s.x1;
+    s.y2 = s.y1-50;  //vertically up
+  }
+  else if (mouseX>= buttonPosX && mouseX<=buttonPosX+30 && mouseY>=buttonPosY+30 && mouseY<=buttonPosY+70) {
+    s.x2 = s.x1;
+    s.y2 = s.y1+50;  //vertically down
+  }
+  else if (mouseX>= buttonPosX+30 && mouseX<=buttonPosX+70 && mouseY>=buttonPosY && mouseY<=buttonPosY+30) {
+    s.x2 = s.x1+50;  //horizontally right
+    s.y2 = s.y1;
+  }
+  else if (mouseX>= buttonPosX-40 && mouseX<=buttonPosX && mouseY>=buttonPosY && mouseY<=buttonPosY+30) {
+    s.x2 = s.x1-50;  //horizontally left
+    s.y2 = s.y1;
+  }
+  
+  s.snap();  //in case user does not opt for 1 feet increments and uses mouse to specify length of pipes
+   
   //check if endpoint of new pipe is the begining of an existing pipe. Have to iterate through Pipes and NOT Splits because old split had been removed with the previous pipe
   for(Pipe p: model.getPipes()) {
     if (s.x2>=p.x1-tolerance && s.x2<=p.x1+tolerance && s.y2>=p.y1-tolerance && s.y2<=p.y1+tolerance) { //snap end of new pipe to beginning of existing pipe 
@@ -287,7 +328,7 @@ void addpipe () {
         pipeCost = pipeCost + bendCost;
     }
   budget = budget - pipeCost;
-  
+//  println(s.y1+"-"+s.y2);
   model.addPipe(s.x1, s.y1, s.x2, s.y2, pipeWidth, inches, flow, cost);
   model.deActivateAllSplits();
 
@@ -419,13 +460,14 @@ void displacePipe() {
 }
 
 //calculate the pressure drop across the pipe
-float pressureDrop(float pipeLength, float dia, float constant, float fRate) { 
+int pressureDrop(float pipeLength, float dia, float constant, float fRate) { 
   constant = constant/1.0;
   fRate = fRate/1.0;
   dia = dia/1.0;
   float pLossPer100ft = (43/100.0) * (2083/10000.0) * pow(100/constant, 1852/1000.0) * pow(fRate, 1852/1000.0) / pow(dia, 48655/10000.0);
-  float pLossSection = pLossPer100ft * pipeLength / 100;
-  return pLossSection;     
+  float pLossSection = pLossPer100ft * pipeLength / 100.0;
+  println((int)pLossSection);
+  return (int)pLossSection;     
 } 
 
 float pLength(int posX1, int posY1, int posX2, int posY2) {

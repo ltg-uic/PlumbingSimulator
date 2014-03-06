@@ -7,7 +7,7 @@ public class PipesModel {
   private int tolerance = 5;
   
   // Initializes the model
-  public void init(int initialX, int initialY, float initPressure) {
+  public void init(int initialX, int initialY, int initPressure) {
     splits.add(new Split(initialX, initialY, initPressure));
   }
 
@@ -17,7 +17,7 @@ public class PipesModel {
   }
   
   // Adds a split
-  public void addSplit(int x, int y, int outlets, float pressure) {
+  public void addSplit(int x, int y, int outlets, int pressure) {
     splits.add(new Split(x, y, pressure));
   }
 
