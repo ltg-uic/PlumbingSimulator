@@ -272,6 +272,7 @@ void getPressure() {
 }
 
 void addpipe () {
+  pipeEndOverlap = false;
   if (mouseY<0 || mouseY>controlPos) return;
 //  println(mouseX+","+mouseY);
   SnapGrid s = new SnapGrid(beginX,beginY,mouseX,mouseY);
@@ -473,10 +474,11 @@ float pLength(int posX1, int posY1, int posX2, int posY2) {
   return pipeLen;
 }
 
-//recalculate pressure for the wntire system due to the modifications made 
+//recalculate pressure for the entire system due to the modifications made 
 void recalculatePressure(Pipe p) {           
     totalLen = pLength(p.x1, p.y1, p.x2, p.y2);    
-    Split f = model.selectSplit(p.x1, p.y1);    
+    Split f = model.selectSplit(p.x1, p.y1);  
+//    println(f.pressure);  
     endPressure = f.pressure - pressureDrop(totalLen, p.inches, rCoeff, p.flow);   //pressure at end of pipe; inches and flow values associated with every pipe should be used 
     Split q = model.selectSplit(p.x2, p.y2);    
     q.pressure = endPressure;
