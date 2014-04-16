@@ -7,7 +7,7 @@ PipesModel model = new PipesModel();
 ControlP5 cp5;
 RadioButton r;
 // Processing variables
-int initialX = 100;
+int initialX = 400;
 int initialY = 600;
 float initPressure = 60;  //psi (has to be float and not int because user can input the pressure as a string and typecasting from string to float is not allowed)
 int budget = 2000; //dollars
@@ -35,13 +35,13 @@ int displaceX;
 int displaceY;
 int helpX = 1010;
 int helpY = 20;
-int vGridX = 150;
+int vGridX = 450;
 int vGridY = 0;
 int hGridX = initialX;
 int bendCost = 100;
 int outputP;
-int buttonPosX = 1100;  //for setting position of the buttons for putting the 1 feet pipes
-int buttonPosY = 590;
+int buttonPosX = 900;  //for setting position of the buttons for putting the 1 feet pipes
+int buttonPosY = 400;
 
 public void setup() {
   size(1280,720);
@@ -70,7 +70,7 @@ public void setup() {
 public void draw() {
   background(255);
   drawGrid();
-  drawHelpText();
+//  drawHelpText();
   fill(150);
   noStroke();
   rect(0, controlPos-10, width, 40);
@@ -83,11 +83,11 @@ public void draw() {
   for(Split s: model.getSplits())
     drawSplit(s);
   drawFixtures();
-  blockAccess();
+//  blockAccess();
   fill(0);
-  text("Total budget: $2000",450,10);
+  text("Total budget: $2000",500,110);
   fill(255,0,0);
-  text("Money spent: $"+int(2000-budget),450,30);
+  text("Money spent: $"+int(2000-budget),500,130);
 }
 
 public void drawPipe(Pipe p) {
@@ -120,60 +120,60 @@ public void drawFixtures() {
   stroke(0,0,255);
   //1st fixture
   noFill();
-  ellipse(450,250,25,25);
+  ellipse(750,250,25,25);
   fill(0,0,255);
-  text("A",445,254);
-  text("10 psi",460,240);
+  text("A",745,254);
+  text("10 psi",760,240);
   //2nd fixture
-  noFill();
-  ellipse(950,250,25,25);
-  fill(0,0,255);
-  text("B",945,254);
-  text("15 psi",960,240);
+//  noFill();
+//  ellipse(950,250,25,25);
+//  fill(0,0,255);
+//  text("B",945,254);
+//  text("15 psi",960,240);
   //3rd fixture
-  noFill();
-  ellipse(950,600,25,25);
-  fill(0,0,255);
-  text("C",945,604);
-  text("8 psi",960,590);
+//  noFill();
+//  ellipse(950,600,25,25);
+//  fill(0,0,255);
+//  text("C",945,604);
+//  text("8 psi",960,590);
 }
 
 void drawGrid() {
   stroke(240);
   strokeWeight(13);
   //horizontal grid lines
-  line(hGridX,50,vGridX+800,50);
-  line(hGridX,150,vGridX+800,150);
-  line(hGridX,250,vGridX+800,250);         //grid line through fixtures A,B,C
-  line(hGridX,350,vGridX+800,350);             
-  line(hGridX,450,vGridX+800,450);
-  line(hGridX,500,vGridX+800,500);
-  line(hGridX,600,vGridX+800,600);          //grid line from 0 to fixture C
+//  line(hGridX,50,vGridX+300,50);
+//  line(hGridX,150,vGridX+300,150);
+  line(hGridX,250,vGridX+300,250);         //grid line through fixtures A,B,C
+  line(hGridX,350,vGridX+300,350);             
+  line(hGridX,450,vGridX+300,450);
+  line(hGridX,500,vGridX+300,500);
+  line(hGridX,600,vGridX+300,600);          //grid line from 0 to fixture C
   
   //horizontal segments
   line(vGridX,300,vGridX+100,300);
-  line(vGridX+150,100,vGridX+300,100);
+//  line(vGridX+150,100,vGridX+300,100);
   line(vGridX+200,550,vGridX+300,550);
   
   //verical grid lines
-  line(vGridX,50,vGridX,600);
-  line(vGridX+100,50,vGridX+100,600);
-  line(vGridX+150,50,vGridX+150,600);
-  line(vGridX+300,50,vGridX+300,600);
-  line(vGridX+450,50,vGridX+450,600);
-  line(vGridX+500,50,vGridX+500,600);
-  line(vGridX+600,50,vGridX+600,600);
-  line(vGridX+650,50,vGridX+650,600);
-  line(vGridX+800,50,vGridX+800,600);
+  line(vGridX,250,vGridX,600);
+  line(vGridX+100,250,vGridX+100,600);
+  line(vGridX+150,250,vGridX+150,600);
+  line(vGridX+300,250,vGridX+300,600);
+//  line(vGridX+450,50,vGridX+450,600);
+//  line(vGridX+500,50,vGridX+500,600);
+//  line(vGridX+600,50,vGridX+600,600);
+//  line(vGridX+650,50,vGridX+650,600);
+//  line(vGridX+800,50,vGridX+800,600);
   
   //vertical segments
-  line(vGridX+200,150,vGridX+200,250);
-  line(vGridX+250,150,vGridX+250,250);
+//  line(vGridX+200,150,vGridX+200,250);
+//  line(vGridX+250,150,vGridX+250,250);
   line(vGridX+200,500,vGridX+200,600);    
   line(vGridX+250,350,vGridX+250,450);    
-  line(vGridX+400,350,vGridX+400,450);    
-  line(vGridX+550,150,vGridX+550,250);    
-  line(vGridX+700,350,vGridX+700,450);    
+//  line(vGridX+400,350,vGridX+400,450);    
+//  line(vGridX+550,150,vGridX+550,250);    
+//  line(vGridX+700,350,vGridX+700,450);    
   
   //ALL
   stroke(255);
