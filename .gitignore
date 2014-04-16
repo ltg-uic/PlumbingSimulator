@@ -10,6 +10,7 @@ tmp/
 local.properties
 .settings/
 .loadpath
+Plumbing Simulator app/
 
 # External tool builders
 .externalToolBuilders/
