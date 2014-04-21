@@ -27,7 +27,6 @@ float totalLen;
 boolean hPipe;
 boolean vPipe;
 boolean pipeEndOverlap;
-int pConstant = 15;
 int tolerance = 5;
 String tool;
 int controlPos = 680; //set the y value of where the controls would be displayed
@@ -44,10 +43,13 @@ int buttonPosX = 900;  //for setting position of the buttons for putting the 1 f
 int buttonPosY = 400;
 
 public void setup() {
-  size(1280,720);
+  size(1280,720); 
   cp5 = new ControlP5(this);
+  PFont f = createFont("Arial",11);
+  cp5.setControlFont(f);
+  
   r = cp5.addRadioButton("pipeButton")
-    .setPosition(150,controlPos)
+    .setPosition(250,controlPos)
     .setSize(20,20)
     .setColorForeground(color(120))
     .setColorActive(color(255))
@@ -56,14 +58,15 @@ public void setup() {
     .setSpacingColumn(100)
     .setNoneSelectedAllowed(false)
     .setValue(0)
-    .addItem("Select branch point", 0)
     .addItem("1 inch",1)
     .addItem("3/4 inch",2)
     .addItem("1/2 inch",3)
-    .addItem("Split Pipe",4)
-    .addItem("Remove",5)
-    .addItem("Displace",6)
-    .addItem("Change starting pressure",7);
+    .addItem("Remove",4)
+    .addItem("Select Joint", 5)
+    .addItem("Change starting pressure",6);
+//    .addItem("Split Pipe",4)
+//    .addItem("Displace",6)
+
   model.init(initialX, initialY, (int)initPressure);
 }
 
@@ -71,7 +74,7 @@ public void draw() {
   background(255);
   drawGrid();
 //  drawHelpText();
-  fill(150);
+  fill(200);
   noStroke();
   rect(0, controlPos-10, width, 40);
   rect(buttonPosX,buttonPosY-40,30,40);  //button for adding pipe vertically up 
@@ -82,12 +85,16 @@ public void draw() {
     drawPipe(p);
   for(Split s: model.getSplits())
     drawSplit(s);
-  drawFixtures();
+//  drawFixtures();
 //  blockAccess();
   fill(0);
-  text("Total budget: $2000",500,110);
+  text("Add pipe segments",buttonPosX-40,buttonPosY-50);
+//  text("Total budget: $2000",500,110);
+  text("Total budget: $2000",buttonPosX-40,buttonPosY+150);
   fill(255,0,0);
-  text("Money spent: $"+int(2000-budget),500,130);
+  text("Money spent: $"+int(2000-budget),buttonPosX-40,buttonPosY+170);
+//  text("Money spent: $"+int(2000-budget),500,130);
+  
 }
 
 public void drawPipe(Pipe p) {
@@ -111,7 +118,7 @@ public void drawSplit(Split s) {
     outputP = 0;
   else
     outputP = int(s.pressure);  
-  text(outputP+" psi", s.x+pConstant, s.y+pConstant);
+  text(outputP+" psi", s.x+5, s.y+15);
   fill(0);
   stroke(0);
 }
@@ -176,13 +183,13 @@ void drawGrid() {
 //  line(vGridX+700,350,vGridX+700,450);    
   
   //ALL
-  stroke(255);
+//  stroke(255);
   strokeWeight(1);
-  int i = vGridX;
-  while (i<vGridX+800) {
-    line(i,50,i,600);
-    i = i+50;
-  }
+//  int i = vGridX;
+//  while (i<vGridX+800) {
+//    line(i,50,i,600);
+//    i = i+50;
+//  }
 }
 
 void blockAccess() {
@@ -330,15 +337,33 @@ void addpipe () {
 
   Split a = model.selectSplit(s.x1, s.y1);     //get the split at the beginning of this new pipe to calculate the pressure drop across the new pipe 
   endPressure = a.pressure - pressureDrop(totalLen, inches, rCoeff, flow);   //pressure calculations for new pipe so inches and flow have been correctly set by use input
+//  println(a.pressure+" -- "+endPressure);
   model.addSplit(s.x2, s.y2, 1, endPressure);
   
-  //recalculate pressure for all pipes as the network is complete now
+  //recalculate pressure for all pipes as the network is complete now.
+  // The outer for loop is a temporary workaround for a bug that was not recalculating all the pressures towards the end of the network correctly after a pipe segment was removed.
   if(pipeEndOverlap) {
-    println("recalculating pressures");
-    for(Pipe p: model.getPipes()) {
-      recalculatePressure(p);
+    for (int y=0; y<50; y++) {
+      println("recalculating pressures");
+      for(Pipe p: model.getPipes()) {
+        recalculatePressure(p);
+      }
     }
-  }  
+  }
+//  if(pipeEndOverlap) {
+//    println("recalculating pressures again");
+//    for(Pipe j: model.getPipes()) {
+//      recalculatePressure(j);
+//    }
+//  }
+// 
+//  if(pipeEndOverlap) {
+//    println("recalculating pressures again");
+//    for(Pipe u: model.getPipes()) {
+//      recalculatePressure(u);
+//    }
+//  }
+  
   beginX = s.x2;
   beginY = s.y2;
 }
@@ -415,19 +440,22 @@ void removePipe(){
     budget = budget + pipeCost;
     
     //re-calculate pressures at all nodes because of the removed pipe. Effectively all pressures after the removed section should be set to zero because network is incomplete now
-    for(Pipe p: model.getPipes()) { 
-      totalLen = pLength(p.x1, p.y1, p.x2, p.y2);    
-      Split a = model.selectSplit(p.x1, p.y1);      
-      if (a == null) {
-        model.deleteSplit(b);
-        return;
+    for (int z=0; z<30; z++) {  //outer for loop temporary fix for resetting all endPressure values to zero after a segment has been removed
+      for(Pipe p: model.getPipes()) { 
+        totalLen = pLength(p.x1, p.y1, p.x2, p.y2);    
+        Split a = model.selectSplit(p.x1, p.y1);      
+        if (a == null) {
+          model.deleteSplit(b);
+          return;
+        }
+        endPressure = a.pressure - pressureDrop(totalLen, p.inches, rCoeff, p.flow);   //pressure at end of pipe 
+        println(endPressure);
+        Split q = model.selectSplit(p.x2, p.y2);   
+        if (endPressure > 0) 
+          q.pressure = endPressure;
+        else q.pressure = 0;        //all pressures after the removed section will be negative so set them to zero
       }
-      endPressure = a.pressure - pressureDrop(totalLen, p.inches, rCoeff, p.flow);   //pressure at end of pipe 
-      Split q = model.selectSplit(p.x2, p.y2);   
-      if (endPressure > 0) 
-        q.pressure = endPressure;
-      else q.pressure = 0;        //all pressures after the removed section will be negative so set them to zero
-    }
+   }
    model.deleteSplit(b); 
   }  
 }
@@ -462,7 +490,7 @@ int pressureDrop(float pipeLength, float dia, float constant, float fRate) {
   dia = dia/1.0;
   float pLossPer100ft = (43/100.0) * (2083/10000.0) * pow(100/constant, 1852/1000.0) * pow(fRate, 1852/1000.0) / pow(dia, 48655/10000.0);
   float pLossSection = pLossPer100ft * pipeLength / 100.0;
-  println((int)pLossSection);
+//  println((int)pLossSection);
   return (int)pLossSection;     
 } 
 
@@ -477,9 +505,13 @@ float pLength(int posX1, int posY1, int posX2, int posY2) {
 //recalculate pressure for the entire system due to the modifications made 
 void recalculatePressure(Pipe p) {           
     totalLen = pLength(p.x1, p.y1, p.x2, p.y2);    
-    Split f = model.selectSplit(p.x1, p.y1);  
-//    println(f.pressure);  
+    Split f = model.selectSplit(p.x1, p.y1);   
+    if (f == null) {    //handle Null Pointer for cases where network is not yet complete but new pipe has been added. Also solves the issue of Null Pointer when calculating pressure of incomplete network after input pressure is changed
+      println("error averted");  
+      return;
+    } 
     endPressure = f.pressure - pressureDrop(totalLen, p.inches, rCoeff, p.flow);   //pressure at end of pipe; inches and flow values associated with every pipe should be used 
+//    println(f.pressure+" -- "+endPressure);
     Split q = model.selectSplit(p.x2, p.y2);    
     q.pressure = endPressure;
 }
@@ -515,18 +547,24 @@ void pipeButton(int a) {
       bendLen = 2.0; //equivalent length of pipe bends
       tool = "pipe";
       break;
-    case 4:  // user wants to split pipe
-      tool = "split";
-      break;
-    case 5:  // user wants to remove pipe
+    case 4:  // user wants to remove pipe
       tool = "remove";
       break;
-    case 6:  // user wants to displace pipe
-      tool = "displace";
+    case 5:
+      tool =  "select";
       break;
-    case 7:  // user wants to change starting pressure
+    case 6:  // user wants to change starting pressure
       tool = "userPressure";
       break;
+
+//    case 4:  // user wants to split pipe
+//      tool = "split";
+//      break;
+
+//    case 6:  // user wants to displace pipe
+//      tool = "displace";
+//      break;
+    
   }
   
 }
