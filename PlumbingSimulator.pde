@@ -7,7 +7,7 @@ PipesModel model = new PipesModel();
 ControlP5 cp5;
 RadioButton r;
 // Processing variables
-int initialX = 400;
+int initialX = 100;
 int initialY = 600;
 float initPressure = 60;  //psi (has to be float and not int because user can input the pressure as a string and typecasting from string to float is not allowed)
 int budget = 2000; //dollars
@@ -27,6 +27,7 @@ float totalLen;
 boolean hPipe;
 boolean vPipe;
 boolean pipeEndOverlap;
+int pConstant = 15;
 int tolerance = 5;
 String tool;
 int controlPos = 680; //set the y value of where the controls would be displayed
@@ -34,22 +35,19 @@ int displaceX;
 int displaceY;
 int helpX = 1010;
 int helpY = 20;
-int vGridX = 450;
+int vGridX = 150;
 int vGridY = 0;
 int hGridX = initialX;
 int bendCost = 100;
 int outputP;
-int buttonPosX = 900;  //for setting position of the buttons for putting the 1 feet pipes
-int buttonPosY = 400;
+int buttonPosX = 1100;  //for setting position of the buttons for putting the 1 feet pipes
+int buttonPosY = 590;
 
 public void setup() {
-  size(1280,720); 
+  size(1280,720);
   cp5 = new ControlP5(this);
-  PFont f = createFont("Arial",11);
-  cp5.setControlFont(f);
-  
   r = cp5.addRadioButton("pipeButton")
-    .setPosition(250,controlPos)
+    .setPosition(150,controlPos)
     .setSize(20,20)
     .setColorForeground(color(120))
     .setColorActive(color(255))
@@ -58,23 +56,22 @@ public void setup() {
     .setSpacingColumn(100)
     .setNoneSelectedAllowed(false)
     .setValue(0)
+    .addItem("Select branch point", 0)
     .addItem("1 inch",1)
     .addItem("3/4 inch",2)
     .addItem("1/2 inch",3)
-    .addItem("Remove pipe",4)
-    .addItem("Select Joint", 5)
-    .addItem("Change starting pressure",6);
-//    .addItem("Split Pipe",4)
-//    .addItem("Displace",6)
-
+    .addItem("Split Pipe",4)
+    .addItem("Remove",5)
+    .addItem("Displace",6)
+    .addItem("Change starting pressure",7);
   model.init(initialX, initialY, (int)initPressure);
 }
 
 public void draw() {
   background(255);
   drawGrid();
-//  drawHelpText();
-  fill(200);
+  drawHelpText();
+  fill(150);
   noStroke();
   rect(0, controlPos-10, width, 40);
   rect(buttonPosX,buttonPosY-40,30,40);  //button for adding pipe vertically up 
@@ -85,16 +82,12 @@ public void draw() {
     drawPipe(p);
   for(Split s: model.getSplits())
     drawSplit(s);
-//  drawFixtures();
-//  blockAccess();
+  drawFixtures();
+  blockAccess();
   fill(0);
-  text("Add pipe segments",buttonPosX-40,buttonPosY-50);
-//  text("Total budget: $2000",500,110);
-  text("Total budget: $2000",buttonPosX-40,buttonPosY+150);
+  text("Total budget: $2000",450,10);
   fill(255,0,0);
-  text("Money spent: $"+int(2000-budget),buttonPosX-40,buttonPosY+170);
-//  text("Money spent: $"+int(2000-budget),500,130);
-  
+  text("Money spent: $"+int(2000-budget),450,30);
 }
 
 public void drawPipe(Pipe p) {
@@ -118,7 +111,7 @@ public void drawSplit(Split s) {
     outputP = 0;
   else
     outputP = int(s.pressure);  
-  text(outputP+" psi", s.x+5, s.y+15);
+  text(outputP+" psi", s.x+pConstant, s.y+pConstant);
   fill(0);
   stroke(0);
 }
@@ -127,69 +120,69 @@ public void drawFixtures() {
   stroke(0,0,255);
   //1st fixture
   noFill();
-  ellipse(750,250,25,25);
+  ellipse(450,250,25,25);
   fill(0,0,255);
-  text("A",745,254);
-  text("10 psi",760,240);
+  text("A",445,254);
+  text("10 psi",460,240);
   //2nd fixture
-//  noFill();
-//  ellipse(950,250,25,25);
-//  fill(0,0,255);
-//  text("B",945,254);
-//  text("15 psi",960,240);
+  noFill();
+  ellipse(950,250,25,25);
+  fill(0,0,255);
+  text("B",945,254);
+  text("15 psi",960,240);
   //3rd fixture
-//  noFill();
-//  ellipse(950,600,25,25);
-//  fill(0,0,255);
-//  text("C",945,604);
-//  text("8 psi",960,590);
+  noFill();
+  ellipse(950,600,25,25);
+  fill(0,0,255);
+  text("C",945,604);
+  text("8 psi",960,590);
 }
 
 void drawGrid() {
   stroke(240);
   strokeWeight(13);
   //horizontal grid lines
-//  line(hGridX,50,vGridX+300,50);
-//  line(hGridX,150,vGridX+300,150);
-  line(hGridX,250,vGridX+300,250);         //grid line through fixtures A,B,C
-  line(hGridX,350,vGridX+300,350);             
-  line(hGridX,450,vGridX+300,450);
-  line(hGridX,500,vGridX+300,500);
-  line(hGridX,600,vGridX+300,600);          //grid line from 0 to fixture C
+  line(hGridX,50,vGridX+800,50);
+  line(hGridX,150,vGridX+800,150);
+  line(hGridX,250,vGridX+800,250);         //grid line through fixtures A,B,C
+  line(hGridX,350,vGridX+800,350);             
+  line(hGridX,450,vGridX+800,450);
+  line(hGridX,500,vGridX+800,500);
+  line(hGridX,600,vGridX+800,600);          //grid line from 0 to fixture C
   
   //horizontal segments
   line(vGridX,300,vGridX+100,300);
-//  line(vGridX+150,100,vGridX+300,100);
+  line(vGridX+150,100,vGridX+300,100);
   line(vGridX+200,550,vGridX+300,550);
   
   //verical grid lines
-  line(vGridX,250,vGridX,600);
-  line(vGridX+100,250,vGridX+100,600);
-  line(vGridX+150,250,vGridX+150,600);
-  line(vGridX+300,250,vGridX+300,600);
-//  line(vGridX+450,50,vGridX+450,600);
-//  line(vGridX+500,50,vGridX+500,600);
-//  line(vGridX+600,50,vGridX+600,600);
-//  line(vGridX+650,50,vGridX+650,600);
-//  line(vGridX+800,50,vGridX+800,600);
+  line(vGridX,50,vGridX,600);
+  line(vGridX+100,50,vGridX+100,600);
+  line(vGridX+150,50,vGridX+150,600);
+  line(vGridX+300,50,vGridX+300,600);
+  line(vGridX+450,50,vGridX+450,600);
+  line(vGridX+500,50,vGridX+500,600);
+  line(vGridX+600,50,vGridX+600,600);
+  line(vGridX+650,50,vGridX+650,600);
+  line(vGridX+800,50,vGridX+800,600);
   
   //vertical segments
-//  line(vGridX+200,150,vGridX+200,250);
-//  line(vGridX+250,150,vGridX+250,250);
+  line(vGridX+200,150,vGridX+200,250);
+  line(vGridX+250,150,vGridX+250,250);
   line(vGridX+200,500,vGridX+200,600);    
   line(vGridX+250,350,vGridX+250,450);    
-//  line(vGridX+400,350,vGridX+400,450);    
-//  line(vGridX+550,150,vGridX+550,250);    
-//  line(vGridX+700,350,vGridX+700,450);    
+  line(vGridX+400,350,vGridX+400,450);    
+  line(vGridX+550,150,vGridX+550,250);    
+  line(vGridX+700,350,vGridX+700,450);    
   
   //ALL
-//  stroke(255);
+  stroke(255);
   strokeWeight(1);
-//  int i = vGridX;
-//  while (i<vGridX+800) {
-//    line(i,50,i,600);
-//    i = i+50;
-//  }
+  int i = vGridX;
+  while (i<vGridX+800) {
+    line(i,50,i,600);
+    i = i+50;
+  }
 }
 
 void blockAccess() {
@@ -279,7 +272,6 @@ void getPressure() {
 }
 
 void addpipe () {
-  pipeEndOverlap = false;
   if (mouseY<0 || mouseY>controlPos) return;
 //  println(mouseX+","+mouseY);
   SnapGrid s = new SnapGrid(beginX,beginY,mouseX,mouseY);
@@ -337,33 +329,15 @@ void addpipe () {
 
   Split a = model.selectSplit(s.x1, s.y1);     //get the split at the beginning of this new pipe to calculate the pressure drop across the new pipe 
   endPressure = a.pressure - pressureDrop(totalLen, inches, rCoeff, flow);   //pressure calculations for new pipe so inches and flow have been correctly set by use input
-//  println(a.pressure+" -- "+endPressure);
   model.addSplit(s.x2, s.y2, 1, endPressure);
   
-  //recalculate pressure for all pipes as the network is complete now.
-  // The outer for loop is a temporary workaround for a bug that was not recalculating all the pressures towards the end of the network correctly after a pipe segment was removed.
+  //recalculate pressure for all pipes as the network is complete now
   if(pipeEndOverlap) {
-    for (int y=0; y<50; y++) {
-      println("recalculating pressures");
-      for(Pipe p: model.getPipes()) {
-        recalculatePressure(p);
-      }
+    println("recalculating pressures");
+    for(Pipe p: model.getPipes()) {
+      recalculatePressure(p);
     }
-  }
-//  if(pipeEndOverlap) {
-//    println("recalculating pressures again");
-//    for(Pipe j: model.getPipes()) {
-//      recalculatePressure(j);
-//    }
-//  }
-// 
-//  if(pipeEndOverlap) {
-//    println("recalculating pressures again");
-//    for(Pipe u: model.getPipes()) {
-//      recalculatePressure(u);
-//    }
-//  }
-  
+  }  
   beginX = s.x2;
   beginY = s.y2;
 }
@@ -440,22 +414,19 @@ void removePipe(){
     budget = budget + pipeCost;
     
     //re-calculate pressures at all nodes because of the removed pipe. Effectively all pressures after the removed section should be set to zero because network is incomplete now
-    for (int z=0; z<30; z++) {  //outer for loop temporary fix for resetting all endPressure values to zero after a segment has been removed
-      for(Pipe p: model.getPipes()) { 
-        totalLen = pLength(p.x1, p.y1, p.x2, p.y2);    
-        Split a = model.selectSplit(p.x1, p.y1);      
-        if (a == null) {
-          model.deleteSplit(b);
-          return;
-        }
-        endPressure = a.pressure - pressureDrop(totalLen, p.inches, rCoeff, p.flow);   //pressure at end of pipe 
-        println(endPressure);
-        Split q = model.selectSplit(p.x2, p.y2);   
-        if (endPressure > 0) 
-          q.pressure = endPressure;
-        else q.pressure = 0;        //all pressures after the removed section will be negative so set them to zero
+    for(Pipe p: model.getPipes()) { 
+      totalLen = pLength(p.x1, p.y1, p.x2, p.y2);    
+      Split a = model.selectSplit(p.x1, p.y1);      
+      if (a == null) {
+        model.deleteSplit(b);
+        return;
       }
-   }
+      endPressure = a.pressure - pressureDrop(totalLen, p.inches, rCoeff, p.flow);   //pressure at end of pipe 
+      Split q = model.selectSplit(p.x2, p.y2);   
+      if (endPressure > 0) 
+        q.pressure = endPressure;
+      else q.pressure = 0;        //all pressures after the removed section will be negative so set them to zero
+    }
    model.deleteSplit(b); 
   }  
 }
@@ -490,7 +461,7 @@ int pressureDrop(float pipeLength, float dia, float constant, float fRate) {
   dia = dia/1.0;
   float pLossPer100ft = (43/100.0) * (2083/10000.0) * pow(100/constant, 1852/1000.0) * pow(fRate, 1852/1000.0) / pow(dia, 48655/10000.0);
   float pLossSection = pLossPer100ft * pipeLength / 100.0;
-//  println((int)pLossSection);
+  println((int)pLossSection);
   return (int)pLossSection;     
 } 
 
@@ -502,16 +473,11 @@ float pLength(int posX1, int posY1, int posX2, int posY2) {
   return pipeLen;
 }
 
-//recalculate pressure for the entire system due to the modifications made 
+//recalculate pressure for the wntire system due to the modifications made 
 void recalculatePressure(Pipe p) {           
     totalLen = pLength(p.x1, p.y1, p.x2, p.y2);    
-    Split f = model.selectSplit(p.x1, p.y1);   
-    if (f == null) {    //handle Null Pointer for cases where network is not yet complete but new pipe has been added. Also solves the issue of Null Pointer when calculating pressure of incomplete network after input pressure is changed
-      println("error averted");  
-      return;
-    } 
+    Split f = model.selectSplit(p.x1, p.y1);    
     endPressure = f.pressure - pressureDrop(totalLen, p.inches, rCoeff, p.flow);   //pressure at end of pipe; inches and flow values associated with every pipe should be used 
-//    println(f.pressure+" -- "+endPressure);
     Split q = model.selectSplit(p.x2, p.y2);    
     q.pressure = endPressure;
 }
@@ -547,24 +513,18 @@ void pipeButton(int a) {
       bendLen = 2.0; //equivalent length of pipe bends
       tool = "pipe";
       break;
-    case 4:  // user wants to remove pipe
+    case 4:  // user wants to split pipe
+      tool = "split";
+      break;
+    case 5:  // user wants to remove pipe
       tool = "remove";
       break;
-    case 5:
-      tool =  "select";
+    case 6:  // user wants to displace pipe
+      tool = "displace";
       break;
-    case 6:  // user wants to change starting pressure
+    case 7:  // user wants to change starting pressure
       tool = "userPressure";
       break;
-
-//    case 4:  // user wants to split pipe
-//      tool = "split";
-//      break;
-
-//    case 6:  // user wants to displace pipe
-//      tool = "displace";
-//      break;
-    
   }
   
 }
