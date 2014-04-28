@@ -61,7 +61,7 @@ public void setup() {
     .addItem("1 inch",1)
     .addItem("3/4 inch",2)
     .addItem("1/2 inch",3)
-    .addItem("Remove",4)
+    .addItem("Remove pipe",4)
     .addItem("Select Joint", 5)
     .addItem("Change starting pressure",6);
 //    .addItem("Split Pipe",4)
