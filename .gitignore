@@ -11,11 +11,8 @@ local.properties
 .settings/
 .loadpath
 Plumbing Simulator app/
-<<<<<<< HEAD
-application.macosx/
 application.macosx.zip
-=======
->>>>>>> parent of 8dad5a5... Deployed in School
+application.macosx/
 
 # External tool builders
 .externalToolBuilders/
