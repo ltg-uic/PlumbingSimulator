@@ -61,11 +61,14 @@ public void setup() {
     .addItem("3/4 inch",2)
     .addItem("1/2 inch",3)
 <<<<<<< HEAD
+<<<<<<< HEAD
     .addItem("Split Pipe",4)
     .addItem("Remove",5)
     .addItem("Displace",6)
     .addItem("Change starting pressure",7);
 =======
+=======
+>>>>>>> parent of 8dad5a5... Deployed in School
     .addItem("Remove",4)
     .addItem("Select Joint", 5)
     .addItem("Change starting pressure",6);
