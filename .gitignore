@@ -12,6 +12,7 @@ local.properties
 .loadpath
 Plumbing Simulator app/
 application.macosx/
+application.macosx.zip
 
 # External tool builders
 .externalToolBuilders/
