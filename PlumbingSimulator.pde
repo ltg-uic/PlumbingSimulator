@@ -273,9 +273,11 @@ void getPressure() {
   model.deActivateAllSplits();
   model.activateSplit(a);
   
-  for(Pipe p: model.getPipes()) {
-    recalculatePressure(p);
-    }
+  for (int y=0; y<50; y++) {
+    for(Pipe p: model.getPipes()) {
+      recalculatePressure(p);
+      }
+  }
 }
 
 void addpipe () {
