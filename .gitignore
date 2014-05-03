@@ -10,9 +10,6 @@ tmp/
 local.properties
 .settings/
 .loadpath
-Plumbing Simulator app/
-application.macosx.zip
-application.macosx/
 
 # External tool builders
 .externalToolBuilders/
