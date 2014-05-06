@@ -129,13 +129,13 @@ public void drawFixtures() {
   ellipse(950,250,25,25);
   fill(0,0,255);
   text("B",945,254);
-  text("15 psi",960,240);
+  text("10 psi",960,240);
   //3rd fixture
   noFill();
   ellipse(950,600,25,25);
   fill(0,0,255);
   text("C",945,604);
-  text("8 psi",960,590);
+  text("10 psi",960,590);
 }
 
 void drawGrid() {
@@ -196,8 +196,8 @@ void blockAccess() {
   rect(vGridX+290,400,20,5);   
   rect(vGridX+550,590,5,20);
   rect(vGridX+550,340,5,20);
-  rect(vGridX+750,240,5,20);
-  rect(vGridX+750,440,5,20);
+//  rect(vGridX+750,240,5,20);
+//  rect(vGridX+750,440,5,20);
 }
   
 void drawHelpText() {
